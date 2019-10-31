@@ -1,0 +1,50 @@
+<div class="wrapper">
+  <section class="content">
+    <div class="content-div">
+      <header class="landing-header">
+        <img src="./assets/img/welcome.png" alt="app logo" class="logo" />
+      </header>
+      <form class="tc-form" name="form" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+        <div class="tc-form__element">
+          <input
+            class="tc-form__input tc-form__input--large"
+            placeholder="اسم المستخدم"
+            type="text"
+            name="username"
+            [(ngModel)]="form.username" #username="ngModel"
+              required autocomplete="username"
+          />
+        </div>
+        <div *ngIf="f.submitted && username.invalid">
+            <div *ngIf="'username.errors.required'">اسم المستخدم مطلوب</div>
+          </div>
+        <div class="tc-form__element">
+          <input
+            class="tc-form__input tc-form__input--large"
+            placeholder="كلمة المرور"
+            type="password"
+            name="password"
+            [(ngModel)]="form.password" #password="ngModel"
+              required minlength="8" autocomplete="current-password"
+          />
+        </div>
+        <div *ngIf="f.submitted && password.invalid">
+            <div *ngIf="'password.errors.required'">كلمة المرور مطلوبة</div>
+            <div *ngIf="'password.errors.minlength'">يجب أن تتكون كلمة المرور من 8 أحرف على الأقل</div>
+          </div>
+        <div class="tc-form__element">
+          <button
+            class="tc-btn-primary tc-btn-primary--big is-block success"
+            type="submit"
+          >
+          تسجيل الدخول »
+          </button>
+        </div>
+        <div *ngIf="f.submitted && isLoginFailed" class="alert alert-danger">
+            فشل تسجيل الدخول :<br/>
+            اسم المستخدم أو كلمة المرور غير صحيح
+          </div>
+      </form>
+    </div>
+  </section>
+</div>

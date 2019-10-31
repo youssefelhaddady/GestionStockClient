@@ -1,0 +1,674 @@
+<div class="main-content mt-1 text-right">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-primary">
+            <h3 class="card-title" style="float: right">العمال</h3>
+          </div>
+          <div class="card-body">
+            <div class="row col-12 mb-1">
+              <div class="col-md-4 col-sm-6 col-xs-12 order-sm-2">
+                <mat-form-field class="example-full-width text-center">
+                  <input
+                    matInput
+                    value="{{
+                      currentDateTime | date: 'HH:mm:ss   dd/MM/yyyy'
+                    }}"
+                    disabled
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-8 col-sm-6 col-xs-12 order-sm-1">
+                <!-- Button Ajouter modal -->
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-toggle="modal"
+                  data-target="#OuvrierSaveModal"
+                  (click)="operation = 'add'; initOuvrier()"
+                  style="float: right"
+                >
+                  <span style="font-size: 10px;"
+                    ><i class="fas fa-plus"></i
+                  ></span>
+                  إضافة عامل
+                </button>
+              </div>
+            </div>
+            <br />
+            <!-- Begin table-->
+            <!-- <table class="table table-hover">
+                            <thead class=" text-primary" >
+                                <th> رقم البطاقة الوطنية </th>
+                                <th> الإسم </th>
+                                <th> رقم الهاتف </th>
+                                <th> الأجرة </th>
+                                <th> عدد الغيابات</th>
+                                <th></th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let ouvrier of ouvriers; let ouvrier_index=index">
+                                    <th>
+                                        {{ouvrier.cin}}
+                                    </th>
+                                    <th>
+                                        {{ouvrier.name}}
+                                    </th>
+                                    <th>
+                                        {{ouvrier.phone}}
+                                    </th>
+                                    <th>
+                                        {{ouvrier.salaire}}
+                                    </th>
+                                    <th>
+                                        {{ouvrier.nbDabsence}}
+                                    </th>
+                                    <th>
+                                        <button type="submit" class="btn btn-warning"  data-toggle="modal" data-target="#MarquerAbsenceModal" (click)="ouvrierSelectione = ouvrier;" title="غياب العامل"><span style="font-size: 15px;"><i class="fas fa-user-minus"></i></span></button>
+                                        <label>....</label>
+                                        <button type="submit"  class="btn btn-primary" data-toggle="modal" data-target="#OuvrierSaveModal" (click)="operation = 'update'; ouvrierSelectione = ouvrier;" title="تغيير المعلومات"><span style="font-size: 15px;"><i class="far fa-edit"></i></span></button>
+                                        <button type="submit"  class="btn btn-danger" data-toggle="modal" data-target="#OuvrierDeleteModal" (click)="operation = 'remove'; ouvrierSelectione = ouvrier;" title="حذف العامل"><span style="font-size: 15px;"><i class="fas fa-trash-alt"></i></span></button> 
+                                    </th>
+                                </tr> 
+                            </tbody>
+                        </table> -->
+            <!--End table table-->
+
+            <!-- ouvrier datatable -->
+            <div class="col-md-10 col-xs-12 tc-datatable table-responsive">
+              <table
+                datatable
+                [dtOptions]="dtOptions"
+                [dtTrigger]="dtTrigger"
+                class="display nowrap text-center col-12"
+              >
+                <thead class="text-primary">
+                  <tr>
+                    <th>رقم البطاقة الوطنية</th>
+                    <th>الإسم</th>
+                    <th>رقم الهاتف</th>
+                    <th>الأجرة</th>
+                    <th>قرض</th>
+                    <th>عدد الغيابات</th>
+                    <th class="text-secondary">خيارات</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="ouvriers?.length != 0">
+                  <tr *ngFor="let ouvrier of ouvriers">
+                    <td>
+                      {{ ouvrier.cin }}
+                    </td>
+                    <td>
+                      {{ ouvrier.name }}
+                    </td>
+                    <td>
+                      {{ ouvrier.phone }}
+                    </td>
+                    <td>
+                      {{ ouvrier.salaire }}
+                    </td>
+                    <td>
+                      {{ ouvrier.avance }}
+                    </td>
+                    <td>
+                      {{ ouvrier.absences.length }}
+                    </td>
+                    <td>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-success tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#DonnerAvanceModal"
+                        (click)="ouvrierSelectione = ouvrier"
+                      >
+                        <span class="tc-tooltip-content">منحة العامل</span>
+                        <span><i class="fas fa-user-plus"></i></span>
+                      </button>
+
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-warning tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#MarquerAbsenceModal"
+                        (click)="ouvrierSelectione = ouvrier"
+                      >
+                        <span class="tc-tooltip-content">غياب العامل</span>
+                        <span><i class="fas fa-user-minus"></i></span>
+                      </button>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#OuvrierSaveModal"
+                        (click)="
+                          operation = 'update'; ouvrierSelectione = ouvrier
+                        "
+                      >
+                        <span class="tc-tooltip-content">تغيير المعلومات</span>
+                        <span><i class="far fa-edit"></i></span>
+                      </button>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-danger tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#OuvrierDeleteModal"
+                        (click)="
+                          operation = 'remove'; ouvrierSelectione = ouvrier
+                        "
+                      >
+                        <span class="tc-tooltip-content">حذف العامل</span>
+                        <span><i class="fas fa-trash-alt"></i></span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <tbody *ngIf="ouvriers?.length == 0">
+                  <tr>
+                    <td colspan="6">
+                      <h3 class="no-data-available text-center text-warning">
+                        لا توجد معلومات !
+                      </h3>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- end of datatable -->
+
+            <!-- Modal Ajouter employe -->
+            <div
+              class="modal fade"
+              id="OuvrierSaveModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="exampleModalCenterTitle"
+              aria-hidden="true"
+            >
+              <div
+                class="modal-dialog modal-lg modal-dialog-centered"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      *ngIf="operation == 'add'"
+                      class="modal-title col-11 text-right"
+                      id="exampleModalLongTitle"
+                    >
+                      إضافة عامل
+                    </h5>
+                    <h5
+                      *ngIf="operation == 'update'"
+                      class="modal-title col-11 text-right"
+                      id="exampleModalLongTitle"
+                    >
+                      تغيير معلومات العامل
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <form class="form-inline" [formGroup]="ouvrierForm">
+                    <div class="container">
+                      <div class="modal-body text-right">
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="cin"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم البطاقة الوطنية :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="cin"
+                              formControlName="cin"
+                              [(ngModel)]="ouvrierSelectione.cin"
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="name"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                            >
+                              الإسم الكامل :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="name"
+                              formControlName="name"
+                              [(ngModel)]="ouvrierSelectione.name"
+                              [class.is-invalid]="name.invalid && name.touched"
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="rip"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم الحساب البنكي :
+                            </label>
+                            <input
+                              type="number"
+                              class="form-control col-md-8 col-sm-12"
+                              id="rip"
+                              min="0"
+                              formControlName="rip"
+                              [(ngModel)]="ouvrierSelectione.rip"
+                              [class.is-invalid]="rip.invalid && rip.touched"
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="salaire"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >الأجرة :
+                            </label>
+                            <input
+                              type="number"
+                              class="form-control col-md-8 col-sm-12"
+                              id="salaire"
+                              min="0"
+                              formControlName="salaire"
+                              [(ngModel)]="ouvrierSelectione.salaire"
+                              [class.is-invalid]="
+                                salaire.invalid && salaire.touched
+                              "
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="phone"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم الهاتف :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="phone"
+                              min="0"
+                              maxlength="10"
+                              minlenght="10"
+                              formControlName="phone"
+                              [(ngModel)]="ouvrierSelectione.phone"
+                              [class.is-invalid]="
+                                phone.invalid && phone.touched
+                              "
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="address"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >العنوان :
+                            </label>
+                            <textarea
+                              class="form-control col-md-8 col-sm-12"
+                              id="address"
+                              formControlName="address"
+                              [(ngModel)]="ouvrierSelectione.address"
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="email"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >البريد الالكتروني :
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control col-md-8 col-sm-12"
+                              id="email"
+                              formControlName="email"
+                              [(ngModel)]="ouvrierSelectione.email"
+                              [class.is-invalid]="
+                                email.invalid && email.touched
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                name.invalid && (name.touched || name.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال اسم العامل
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="rip.invalid && (rip.touched || rip.dirty)"
+                            >
+                              <li>
+                                رقم الحساب البنكي يجب أن يكون موجباً
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                salaire.invalid &&
+                                (salaire.touched || salaire.dirty)
+                              "
+                            >
+                              <li *ngIf="'salaire.errors?.required'">
+                                يجب ادخال قيمة الأجرة
+                              </li>
+                              <li *ngIf="'salaire.errors?.min'">
+                                قيمة الأجرة يجب أن تكون موجبة
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="mt-md-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                phone.invalid && (phone.touched || phone.dirty)
+                              "
+                            >
+                              <li>
+                                رقم الهاتف يحتوي عشرة أرقام
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                email.invalid && (email.touched || email.dirty)
+                              "
+                            >
+                              <li>
+                                أدخل بريد الكتروني صالح
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <br /><br /><br />
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger ml-3"
+                          data-dismiss="modal"
+                        >
+                          إلغاء
+                        </button>
+                        <!-- <button type="button" class="btn btn-success" (click)="addemploye()" data-dismiss="modal" > تأكيد </button> -->
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          data-dismiss="modal"
+                          [disabled]="
+                            ouvrierForm.pristine || ouvrierForm.invalid
+                          "
+                          (click)="
+                            operation == 'add'
+                              ? addOuvrier()
+                              : operation == 'update'
+                              ? updateOuvrier()
+                              : operationError()
+                          "
+                        >
+                          تأكيد
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!---MOdal eend-->
+
+            <!-- Modal Absence -->
+            <div
+              class="modal text-right fade"
+              id="MarquerAbsenceModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="ModalMarquerAbsenceTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="exampleModalLongTitle"
+                    >
+                      غياب العامل
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <!-- <form class="form" [formGroup]="absenceForm"> -->
+                  <div class="modal-body container">
+                    <!-- <div class="form-group row col-12">
+                                                <input type="number" class="form-control col-6" id="nbAbsence" min="1" max="31" formControlName="nbAbsence" [class.is-invalid]="nbAbsence.invalid && nbAbsence.touched">
+                                                <label for="nbAbsence" class="control-label text-nowrap text-right col-6"> يوم </label>
+                                            </div> 
+                                            <div class="row">
+                                                <div class="mt-2 col-12">
+                                                    <ul class="text-danger col-12" *ngIf="nbAbsence.invalid && (nbAbsence.touched || nbAbsence.dirty)">
+                                                        <li *ngIf="'nbAbsence.errors?.required'">
+                                                            يجب ادخال عدد أيام الغياب
+                                                        </li>
+                                                        <li *ngIf="'nbAbsence.errors?.min'">
+                                                            أدخل عدد أيام أكبر من 1 (يوم)
+                                                        </li>
+                                                        <li *ngIf="'nbAbsence.errors?.max'">
+                                                            أدخل عدد أيام أقل من 31 (يوم)
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div> -->
+                    <div class="row col-12">
+                      <h3 class="text-danger mr-1 text-right">
+                        تأكيد غياب العامل !!
+                      </h3>
+                    </div>
+                    <div class="row col-12 justify-content-center">
+                      <h4 class="text-warning mb-2 text-center">
+                        {{ ouvrierSelectione.name }}
+                      </h4>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <!-- <button type="button" class="btn btn-success" [disabled]="absenceForm.pristine || absenceForm.invalid" (click)="incrementerNbAbsencePourLOuvrier()" data-dismiss="modal" > تأكيد </button> -->
+                    <button
+                      type="button"
+                      class="btn btn-success"
+                      (click)="signOuvrierAbsence()"
+                      data-dismiss="modal"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                  <!-- </form>     -->
+                </div>
+              </div>
+            </div>
+            <!---Modal eend-->
+
+            <!-- Modal Avance -->
+            <div
+              class="modal text-right fade"
+              id="DonnerAvanceModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="ModalDonnerAvanceTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="exampleModalLongTitle"
+                    >
+                      منحة العامل
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body container">
+                    <div class="form-group row col-12">
+                      <input
+                        type="number"
+                        class="form-control col-6"
+                        id="montantDonne"
+                        min="0"
+                        [(ngModel)]="montantDonne"
+                      />
+                      <label
+                        for="montantDonne"
+                        class="control-label text-nowrap text-right col-6"
+                      >
+                        درهم
+                      </label>
+                    </div>
+                    <div class="row">
+                      <div class="mt-2 col-12">
+                        <ul class="text-danger col-12">
+                          <li *ngIf="montantDonne === null">
+                            يجب ادخال عدد أيام الغياب
+                          </li>
+                          <li *ngIf="montantDonne <= 0">
+                            أدخل عدد مبلغ من 0
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="row col-12">
+                      <h3 class="text-danger mr-1 text-right">
+                        تأكيد منحة العامل !!
+                      </h3>
+                    </div>
+                    <div class="row col-12 justify-content-center">
+                      <h4 class="text-warning mb-2 text-center">
+                        {{ ouvrierSelectione.name }}
+                      </h4>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      data-dismiss="modal"
+                      class="btn btn-success"
+                      (click)="giveAvance()"
+                      [disabled]="montantDonne === null || montantDonne <= 0"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal eend-->
+
+            <!-- Delete Worker Modal -->
+            <div
+              class="modal text-right fade"
+              id="OuvrierDeleteModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="ModalOuvrierDeleteTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="exampleModalLongTitle"
+                    >
+                      حذف العامل
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body">
+                    <h3 style="float: right;color:tomato">
+                      هل أنت متأكد أنك تريد حذف العامل ؟
+                    </h3>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-success ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="deleteOuvrier()"
+                      data-dismiss="modal"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal eend-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

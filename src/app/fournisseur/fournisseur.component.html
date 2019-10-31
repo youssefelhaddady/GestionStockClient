@@ -1,0 +1,464 @@
+<div class="main-content mt-1 text-right">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-info">
+            <h3 class="card-title" style="float: right">المزودون</h3>
+          </div>
+          <div class="card-body">
+            <div class="row col-12 mb-1">
+              <div class="col-md-4 col-sm-6 col-xs-12 order-sm-2">
+                <mat-form-field class="example-full-width text-center">
+                  <input
+                    matInput
+                    value="{{
+                      currentDateTime | date: 'HH:mm:ss \t\t\t dd/MM/yyyy'
+                    }}"
+                    disabled
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-8 col-sm-6 col-xs-12 order-sm-1">
+                <!-- Button Ajouter modal -->
+                <button
+                  type="button"
+                  class="btn btn-info"
+                  data-toggle="modal"
+                  data-target="#FournisseurSaveModal"
+                  (click)="operation = 'add'; initFournisseur()"
+                  style="float: right"
+                >
+                  <span style="font-size: 10px;"
+                    ><i class="fas fa-plus"></i
+                  ></span>
+                  إضافة مزود
+                </button>
+              </div>
+            </div>
+            <br />
+
+            <!-- fournisseur datatable -->
+            <div class="col-md-10 col-xs-12 tc-datatable table-responsive">
+              <table
+                datatable
+                [dtOptions]="dtOptions"
+                [dtTrigger]="dtTrigger"
+                class="display nowrap text-center col-12"
+              >
+                <thead class=" text-info">
+                  <tr>
+                    <th>رقم البطاقة الوطنية</th>
+                    <th>الإسم</th>
+                    <th>رقم الهاتف</th>
+                    <th title="يدفع">سلف</th>
+                    <th title="يستلم">قرض</th>
+                    <th class="text-secondary">خيارات</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="fournisseurs?.length != 0">
+                  <tr *ngFor="let fournisseur of fournisseurs">
+                    <td>
+                      {{ fournisseur.cin }}
+                    </td>
+                    <td>
+                      {{ fournisseur.name }}
+                    </td>
+                    <td>
+                      {{ fournisseur.phone }}
+                    </td>
+                    <td>
+                      {{ getCreditFournisseur(fournisseur.credit) }}
+                    </td>
+                    <td>
+                      {{ getPretFournisseur(fournisseur.credit) }}
+                    </td>
+                    <td>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#FournisseurSaveModal"
+                        (click)="
+                          operation = 'update';
+                          fournisseurSelectionne = fournisseur
+                        "
+                      >
+                        <span class="tc-tooltip-content">تغيير المعلومات</span>
+                        <span><i class="far fa-edit"></i></span>
+                      </button>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-danger tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#FournisseurDeleteModal"
+                        *ngIf="fournisseur.name !== 'غير معروف'"
+                        (click)="
+                          operation = 'remove';
+                          fournisseurSelectionne = fournisseur
+                        "
+                      >
+                        <span class="tc-tooltip-content"> حذف </span>
+                        <span><i class="fas fa-trash-alt"></i></span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Datatable end -->
+
+            <!-- Modal Ajouter/Modifier employe -->
+            <div
+              class="modal fade"
+              id="FournisseurSaveModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="FournisseurSaveModalTitle"
+              aria-hidden="true"
+            >
+              <div
+                class="modal-dialog modal-lg modal-dialog-centered"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      *ngIf="operation == 'add'"
+                      class="modal-title col-11 text-right"
+                      id="FournisseurModalLongTitle"
+                    >
+                      إضافة مزود
+                    </h5>
+                    <h5
+                      *ngIf="operation == 'update'"
+                      class="modal-title col-11 text-right"
+                      id="FournisseurModalLongTitle"
+                    >
+                      تغيير معلومات المزود
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <form class="form-inline" [formGroup]="fournisseurForm">
+                    <div class="container">
+                      <div class="modal-body text-right">
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="cin"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم البطاقة الوطنية :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="cin"
+                              formControlName="cin"
+                              [(ngModel)]="fournisseurSelectionne.cin"
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="name"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                            >
+                              الإسم الكامل :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="name"
+                              formControlName="name"
+                              [(ngModel)]="fournisseurSelectionne.name"
+                              [class.is-invalid]="name.invalid && name.touched"
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="rip"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم الحساب البنكي :
+                            </label>
+                            <input
+                              type="number"
+                              class="form-control col-md-8 col-sm-12"
+                              id="rip"
+                              min="0"
+                              formControlName="rip"
+                              [(ngModel)]="fournisseurSelectionne.rip"
+                              [class.is-invalid]="rip.invalid && rip.touched"
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="raison_sociale"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >الاسم التجاري :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="raison_sociale"
+                              min="0"
+                              formControlName="raison_sociale"
+                              [(ngModel)]="
+                                fournisseurSelectionne.raison_sociale
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="creditFournisseur"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              title="يدفع"
+                              >سلف :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="creditFournisseur"
+                              min="0"
+                              maxlength="10"
+                              minlenght="10"
+                              formControlName="creditFournisseur"
+                              [ngModel]="
+                                getCreditFournisseur(fournisseurSelectionne.credit)
+                              "
+                              [class.is-invalid]="
+                                creditFournisseur.invalid && creditFournisseur.touched
+                              "
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="pretFournisseur"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              title="يستلم"
+                              >قرض :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="pretFournisseur"
+                              min="0"
+                              maxlength="10"
+                              minlenght="10"
+                              formControlName="pretFournisseur"
+                              [ngModel]="
+                                getPretFournisseur(fournisseurSelectionne.credit)
+                              "
+                              [class.is-invalid]="
+                                pretFournisseur.invalid && pretFournisseur.touched
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="phone"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >رقم الهاتف :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="phone"
+                              min="0"
+                              maxlength="10"
+                              minlenght="10"
+                              formControlName="phone"
+                              [(ngModel)]="fournisseurSelectionne.phone"
+                              [class.is-invalid]="
+                                phone.invalid && phone.touched
+                              "
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="address"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >العنوان :
+                            </label>
+                            <textarea
+                              class="form-control col-md-8 col-sm-12"
+                              id="address"
+                              formControlName="address"
+                              [(ngModel)]="fournisseurSelectionne.address"
+                            ></textarea>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="email"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >البريد الالكتروني :
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control col-md-8 col-sm-12"
+                              id="email"
+                              formControlName="email"
+                              [(ngModel)]="fournisseurSelectionne.email"
+                              [class.is-invalid]="
+                                email.invalid && email.touched
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                name.invalid && (name.touched || name.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال اسم العامل
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="rip.invalid && (rip.touched || rip.dirty)"
+                            >
+                              <li>
+                                رقم الحساب البنكي يجب أن يكون موجباً
+                              </li>
+                            </ul>
+                          </div>
+                          <div class="mt-md-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                phone.invalid && (phone.touched || phone.dirty)
+                              "
+                            >
+                              <li>
+                                رقم الهاتف يحتوي عشرة أرقام
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                email.invalid && (email.touched || email.dirty)
+                              "
+                            >
+                              <li>
+                                أدخل بريد الكتروني صالح
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <br /><br /><br />
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger ml-3"
+                          data-dismiss="modal"
+                        >
+                          إلغاء
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          data-dismiss="modal"
+                          [disabled]="
+                            fournisseurForm.pristine || fournisseurForm.invalid
+                          "
+                          (click)="
+                            operation == 'add'
+                              ? addFournisseur()
+                              : operation == 'update'
+                              ? updateFournisseur()
+                              : operationError()
+                          "
+                        >
+                          تأكيد
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+
+            <!-- Fournisseur Delete Modal -->
+            <div
+              class="modal text-right fade"
+              id="FournisseurDeleteModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="FournisseurDeleteModalTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="FournisseurModalLongTitle"
+                    >
+                      حذف المزود
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body">
+                    <h3 style="float: right;color:tomato">
+                      هل أنت متأكد أنك تريد حذف المزود ؟
+                    </h3>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-success ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="deleteFournisseur()"
+                      data-dismiss="modal"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

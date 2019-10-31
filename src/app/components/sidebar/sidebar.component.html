@@ -1,0 +1,30 @@
+
+<div class="logo"  >
+    <a class="simple-text">
+            تطبيق تدبير المنتجات
+        <div class="logo-img">
+            <img src="./assets/img/controle.png"/>
+        </div>
+    </a>
+</div>
+
+<div class="sidebar-wrapper"  >
+
+    <div *ngIf="isMobileMenu()">
+    </div>
+    <ul class="nav" >
+        <ng-container  *ngFor="let menuItem of menuItems" >
+            <li routerLinkActive="active" *ngIf="menuItem.visible"  class="{{menuItem.class}} nav-item">
+                <a class="nav-link" [routerLink]="[menuItem.path]">  
+                    <i class="material-icons" style="float: right">{{menuItem.icon}}</i>  
+                    <h4 style="float: right">{{menuItem.title}}</h4>
+                    <br>
+                </a>
+            </li>
+        </ng-container>
+        <div>
+            <img  height="60" width="192"  src="./assets/img/welcome.png"   style="float:left;margin:0 10px 0 20px; top :80px " />
+        </div>
+    </ul>
+
+</div>

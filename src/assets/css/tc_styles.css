@@ -1,0 +1,232 @@
+
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.tc-form-control-warning {
+  background-image: linear-gradient(to top, #e19b18 2px, rgba(156, 39, 176, 0) 2px), linear-gradient(to top, #e19b18 2px, rgba(210, 210, 210, 0) 1px);
+}
+
+.tc-form-control-error {
+  background-image: linear-gradient(to top, #f44336 2px, rgba(156, 39, 176, 0) 2px), linear-gradient(to top, #f44336 2px, rgba(210, 210, 210, 0) 1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
+
+
+/********* cards *********/
+._global_card {
+  background: #f1f2f6 !important;
+}
+
+._informations_card {
+}
+
+._products_card {
+  box-shadow: none;
+  border-radius: 0 6px 6px 0;
+  border: #939393c4 1px solid;
+  border-left: 0px; 
+}
+
+._payment_card {
+  background: #ffffff99;
+  box-shadow: none;
+  border: #939393c4 1px solid;
+  border-radius: 6px 0 0 6px;
+}
+
+
+/********* datatable *********/
+.tc-datatable tr{
+  height: 65px;
+  max-height: 70px;
+}
+
+.tc-datatable {
+  margin: 0 auto;
+}
+
+div.dataTables_wrapper table{
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+div.dataTables_wrapper div.dataTables_length select {
+  width: 30px;
+  display: inline-block;
+  border: 0;
+  background-image: linear-gradient(#009efb, #009efb), linear-gradient(#d9d9d9, #d9d9d9);
+  background-size: 0 2px, 100% 1px;
+  background-repeat: no-repeat;
+  background-position: center bottom, center calc(100% - 1px);
+  background-color: transparent;
+  transition: background 0s ease-out;
+  padding-bottom: 5px;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+  margin-right: 0.5em;
+  display: inline-block;
+  width: auto;
+  border: 0;
+  background-image: linear-gradient(#009efb, #009efb), linear-gradient(#d9d9d9, #d9d9d9);
+  background-size: 0 2px, 100% 1px;
+  background-repeat: no-repeat;
+  background-position: center bottom, center calc(100% - 1px);
+  background-color: transparent;
+  transition: background 0s ease-out;
+  float: none;
+  box-shadow: none;
+  border-radius: 0;
+  margin-left: 10px;
+}
+
+
+/********* button *********/
+
+.tc-btn {
+  display: inline-block;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  font-size: 18px;
+  font-weight: 100;
+  padding: 8px 15px;
+  transition: all 0.3s ease 0s;
+}
+
+.tc-btn:hover {
+  font-weight: 1000;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+  padding: 12px 30px;
+  border-radius: 4px;
+  transition: all 0.4s ease 0s;
+}
+
+.tc-btn-success {
+  color: #159989;
+}
+
+ .tc-btn-success:hover {
+  color: #ffffff !important;
+  background: #159989;
+}
+
+.tc-btn-light-info {
+  color: #00bcd4;
+}
+
+ .tc-btn-light-info:hover {
+  color: #ffffff !important;
+  background: #00bcd4;
+}
+
+.tc-btn-dark-info {
+  color: #426EF0;
+}
+
+ .tc-btn-dark-info:hover {
+  color: #ffffff !important;
+  background: #426EF0;
+}
+
+.tc-btn-warning {
+  color: #DAA520;
+}
+
+.tc-btn-warning:hover {
+  color: #ffffff !important;
+  background: #DAA520;
+}
+
+.tc-btn-danger {
+  color: #d81919;
+}
+
+.tc-btn-danger:hover {
+  color: #ffffff !important;
+  background: #d81919;
+}
+
+
+
+/********* borders *********/
+/* info bottom/right rounded border */
+.tc-border-info-br-r {
+  border-bottom: 2px solid #00bcd4;
+  border-right: 1px solid #00bcd4;
+  border-radius: 8px;
+  border-top-left-radius: 0px;
+}
+
+
+
+/********* background *********/
+.tc-bg-dack-info {
+  /* background: #426EF0 !important; */
+  background: linear-gradient(-90deg, #426EF0, rgba(66, 109, 240, 0.8)) !important;
+}
+.tc-bg-light-info{
+  background: #00bcd4 !important;
+}
+.tc-bg-blue {
+  /* background: #7094B7 !important; */
+  background: linear-gradient(-130deg, #7094B7, rgba(112, 148, 183, 0.8)) !important;
+}
+.tc-bg-success {
+  /* background: #159989 !important; */
+  background: linear-gradient(-130deg, #159989, rgb(21,153,137, 0.8)) !important;
+}
+.tc-bg-light-warning {
+  background: linear-gradient(-130deg, rgb(244,202,70), rgb(244,202,70, 0.8)) !important;
+}
+
+
+
+/********* tooltip *********/
+.tc-tooltip {
+  position: relative;
+}
+
+.tc-tooltip .tc-tooltip-content {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  padding: 5px 7px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 200;
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 1s .8s;
+}
+
+.tc-tooltip:hover .tc-tooltip-content {
+  visibility: visible;
+  opacity: 1;
+}
+
+.tc-tooltip .tc-tooltip-content::after {
+  content: " ";
+  position: absolute;
+  top: 100%; 
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+

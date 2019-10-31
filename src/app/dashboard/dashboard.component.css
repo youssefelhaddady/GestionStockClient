@@ -1,0 +1,21 @@
+#hero{
+
+    background-size: cover;
+    background-position:  center;
+    position: relative;
+    top :0;
+    bottom: 0;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+h2 {
+    position: relative;
+    left: 20px;
+    top: 60px;    }
+h3 {
+    position: relative;
+    left: 10px;
+    top: 50px; 
+}

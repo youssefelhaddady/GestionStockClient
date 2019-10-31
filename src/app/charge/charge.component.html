@@ -1,0 +1,515 @@
+<div class="main-content mt-1 text-right">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-info">
+            <h3 class="card-title" style="float: right">التكاليف</h3>
+          </div>
+          <div class="card-body">
+            <div class="row col-12 mb-1">
+              <div class="col-md-4 col-sm-6 col-xs-12 order-sm-2">
+                <mat-form-field class="example-full-width text-center">
+                  <input
+                    matInput
+                    value="{{
+                      currentDateTime | date: 'HH:mm:ss \t\t\t dd/MM/yyyy'
+                    }}"
+                    disabled
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-8 col-sm-6 col-xs-12 order-sm-1">
+                <!-- Button Ajouter modal -->
+                <button
+                  type="button"
+                  class="btn btn-info"
+                  data-toggle="modal"
+                  data-target="#ChargeSaveModal"
+                  (click)="operation = 'add'; initCharge()"
+                  style="float: right"
+                >
+                  <span style="font-size: 10px;"
+                    ><i class="fas fa-plus"></i
+                  ></span>
+                  إضافة تكلفة
+                </button>
+              </div>
+            </div>
+
+            <div class="row col-12 mx-0 my-5 p-0 justify-content-center">
+              <div
+                class="row col-md-10 col-xs-12 d-flex flex-row justify-content-between"
+              >
+                <button
+                  class="tc-link-previous m-0"
+                  (click)="previousMonth()"
+                  [disabled]="!hasDataForPreviousMonth"
+                >
+                  <span>الشهر السابق</span>
+                </button>
+                <button class="tc-link-current m-0" (click)="currentMonth()">
+                  <span>الشهر الحالي</span>
+                </button>
+                <button
+                  class="tc-link-next m-0"
+                  (click)="nextMonth()"
+                  [disabled]="!hasDataForNextMonth"
+                >
+                  <span>الشهر الموالي</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- charge datatable -->
+            <div class="col-md-10 col-xs-12 tc-datatable table-responsive">
+              <table
+                datatable
+                [dtOptions]="dtOptions"
+                [dtTrigger]="dtTrigger"
+                class="display nowrap text-center col-12"
+              >
+                <thead class=" text-info">
+                  <tr>
+                    <th>الإسم</th>
+                    <th>التاريخ</th>
+                    <th>ثمن التكلفة</th>
+                    <th>الوضع الحالي</th>
+                    <th class="text-secondary">خيارات</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="charges?.length != 0">
+                  <tr *ngFor="let charge of charges">
+                    <td>
+                      {{ charge.typeDeCharge.libele }}
+                    </td>
+                    <td>
+                      {{ charge.dateCharge }}
+                    </td>
+                    <td>
+                      {{ charge.montant }}
+                    </td>
+                    <td>
+                      {{ getEtatCharge(charge.etat) }}
+                    </td>
+                    <td>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#ChargeSaveModal"
+                        (click)="
+                          operation = 'update';
+                          chargeSelectionne = charge;
+                          typeDeChargeSelectionne = charge.typeDeCharge
+                        "
+                      >
+                        <span class="tc-tooltip-content">تغيير المعلومات</span>
+                        <span><i class="far fa-edit"></i></span>
+                      </button>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-danger tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#ChargeDeleteModal"
+                        (click)="
+                          operation = 'remove'; chargeSelectionne = charge
+                        "
+                      >
+                        <span class="tc-tooltip-content"> حذف </span>
+                        <span><i class="fas fa-trash-alt"></i></span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Datatable end -->
+
+            <div
+              class="modal fade"
+              id="ChargeSaveModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="ChargeSaveModalTitle"
+              aria-hidden="true"
+            >
+              <div
+                class="modal-dialog modal-lg modal-dialog-centered"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      *ngIf="operation == 'add'"
+                      class="modal-title col-11 text-right"
+                      id="ChargeModalLongTitle"
+                    >
+                      إضافة تكلفة
+                    </h5>
+                    <h5
+                      *ngIf="operation == 'update'"
+                      class="modal-title col-11 text-right"
+                      id="ChargeModalLongTitle"
+                    >
+                      تغيير معلومات التكلفة
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <form class="form-inline" [formGroup]="chargeForm">
+                    <div class="container">
+                      <div class="modal-body text-right">
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="typeDeCharge"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >الإسم :
+                            </label>
+                            <select
+                              class="form-control col-md-8 col-sm-12"
+                              id="typeDeCharge"
+                              formControlName="typeDeCharge"
+                              [(ngModel)]="typeDeChargeSelectionne.libele"
+                              [class.is-invalid]="
+                                typeDeCharge.invalid && typeDeCharge.touched
+                              "
+                            >
+                              <option *ngFor="let typeCharge of typesCharge">
+                                {{ typeCharge.libele }}
+                              </option>
+                              <option (click)="newTypeCharge()">نوع آخر</option>
+                            </select>
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="dateCharge"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                            >
+                              التاريخ :
+                            </label>
+                            <mat-form-field class="col-md-8 col-sm-12">
+                              <input
+                                matInput
+                                [matDatepicker]="chargeDatePicker"
+                                id="dateCharge"
+                                formControlName="dateCharge"
+                                [(ngModel)]="
+                                  operation === 'add'
+                                    ? date
+                                    : chargeSelectionne.dateCharge
+                                "
+                                [class.is-invalid]="
+                                  dateCharge.invalid && dateCharge.touched
+                                "
+                              />
+                              <!-- <input
+                                matInput
+                                [matDatepicker]="chargeDatePicker"
+                                id="dateCharge"
+                                formControlName="dateCharge"
+                                [(ngModel)]="
+                                  operation == 'add'
+                                    ? date
+                                    : chargeSelectionne.dateCharge
+                                "
+                                [min]="minDate"
+                                [max]="maxDate"
+                              /> -->
+                              <mat-datepicker-toggle
+                                matSuffix
+                                [for]="chargeDatePicker"
+                              ></mat-datepicker-toggle>
+                              <mat-datepicker
+                                #chargeDatePicker
+                              ></mat-datepicker>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="montant"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >ثمن التكلفة :
+                            </label>
+                            <input
+                              type="number"
+                              class="form-control col-md-8 col-sm-12"
+                              id="montant"
+                              min="0"
+                              formControlName="montant"
+                              [(ngModel)]="chargeSelectionne.montant"
+                              [class.is-invalid]="
+                                montant.invalid && montant.touched
+                              "
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="etat"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >الوضع الحالي :
+                            </label>
+                            <mat-radio-group
+                              class="col-md-8 col-sm-12"
+                              id="etat"
+                              formControlName="etat"
+                              [(ngModel)]="chargeSelectionne.etat"
+                            >
+                              <mat-radio-button value="PAYE" class="ml-3"
+                                >مدفوعة</mat-radio-button
+                              >
+                              <mat-radio-button value="NONPAYE" class=""
+                                >غير مدفوعة</mat-radio-button
+                              >
+                            </mat-radio-group>
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                typeDeCharge.invalid &&
+                                (typeDeCharge.touched || typeDeCharge.dirty)
+                              "
+                            >
+                              <li>
+                                يجب اختيار اسم التكلفة
+                              </li>
+                            </ul>
+
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                dateCharge.invalid &&
+                                (dateCharge.touched || dateCharge.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال تاريخ التكلفة
+                              </li>
+                            </ul>
+
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                montant.invalid &&
+                                (montant.touched || montant.dirty)
+                              "
+                            >
+                              <li *ngIf="'montant.errors?.required'">
+                                يجب ادخال قيمة التكلفة
+                              </li>
+                              <li *ngIf="'montant.errors?.min'">
+                                قيمة التكلفة يجب ان تكون موجبة وغير منعدمة
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger ml-3"
+                          data-dismiss="modal"
+                        >
+                          إلغاء
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          data-dismiss="modal"
+                          [disabled]="chargeForm.pristine || chargeForm.invalid"
+                          (click)="
+                            operation == 'add'
+                              ? addCharge()
+                              : operation == 'update'
+                              ? updateCharge()
+                              : operationError()
+                          "
+                        >
+                          تأكيد
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+
+            <!-- Charge Delete Modal -->
+            <div
+              class="modal text-right fade"
+              id="ChargeDeleteModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="ChargeDeleteModalTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="ChargeModalLongTitle"
+                    >
+                      حذف التكلفة
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body">
+                    <h3 style="float: right;color:tomato">
+                      هل أنت متأكد أنك تريد حذف التكلفة ؟
+                    </h3>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-success ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="deleteCharge()"
+                      data-dismiss="modal"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+
+            <button
+              id="openModalButton"
+              [hidden]="true"
+              data-toggle="modal"
+              data-target="#typeChargeSaveModal"
+            >
+              Open typeChargeSaveModal
+            </button>
+            <!-- Modal Ajouter fournisseur -->
+            <div
+              class="modal fade"
+              id="typeChargeSaveModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="typeChargeSaveModalTitle"
+              aria-hidden="true"
+              style="z-index: 5000"
+            >
+              <div
+                class="modal-dialog modal-lg modal-dialog-centered"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="FournisseurModalLongTitle"
+                    >
+                      إضافة تكلفة جديدة
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <form class="form-inline" [formGroup]="typeChargeForm">
+                    <div class="container">
+                      <div class="modal-body text-right">
+                        <div class="row">
+                          <div class="form-group col-lg-12 col-sm-12">
+                            <label
+                              for="name"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >اسم التكلفة :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="name"
+                              formControlName="name"
+                              [class.is-invalid]="name.invalid && name.touched"
+                            />
+                          </div>
+                        </div>
+
+                        <div class="row">
+                          <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                name.invalid && (name.touched || name.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال اسم التكلفة
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger ml-3"
+                          data-dismiss="modal"
+                        >
+                          إلغاء
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          data-dismiss="modal"
+                          [disabled]="
+                            typeChargeForm.pristine || typeChargeForm.invalid
+                          "
+                          (click)="addTypeCharge()"
+                        >
+                          تأكيد
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

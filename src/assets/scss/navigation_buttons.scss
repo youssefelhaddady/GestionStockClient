@@ -1,0 +1,117 @@
+.tc-link-previous {
+    border-radius: 4px;
+    background: linear-gradient(90deg, #00bcd4, rgba(00, 188, 212, 0.6)) !important;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+    transition: all 0.4s;
+    cursor: pointer;
+    margin: 5px;
+  }
+  .tc-link-previous span {
+    display: inline-block;
+    position: relative;
+    transition: 0.4s;
+  }
+  .tc-link-previous span:after {
+    content: '\00ab';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  .tc-link-previous:hover span {
+    padding-right: 25px;
+  }
+  .tc-link-previous:hover span:after {
+    opacity: 1;
+    right: 0;
+  }
+
+
+  .tc-link-next {
+    border-radius: 4px;
+    background: linear-gradient(-90deg, #00bcd4, rgba(00, 188, 212, 0.6)) !important;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+    transition: all 0.4s;
+    cursor: pointer;
+    margin: 5px;
+  }
+  .tc-link-next span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.4s;
+  }
+  .tc-link-next span:after {
+    content: '\00bb';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: -20px;
+    transition: 0.5s;
+  }
+  .tc-link-next:hover span {
+    padding-left: 25px;
+  }
+  .tc-link-next:hover span:after {
+    opacity: 1;
+    left: 0;
+  }
+
+
+  .tc-link-current {
+    border-radius: 4px;
+    background: linear-gradient(to right, rgba(00, 188, 212, 0.7), #00bcd4, rgba(00, 188, 212, 0.7)) !important;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 16px;
+    padding: 12px;
+    transition: all 0.4s;
+    cursor: pointer;
+    margin: 5px;
+  }
+  .tc-link-current span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.4s;
+  }
+  .tc-link-current span:after {
+    content: '\2022';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    left: -20px;
+    transition: 0.5s;
+  }
+  .tc-link-current:hover span {
+    padding-left: 25px;
+  }
+  .tc-link-current:hover span:after {
+    opacity: 1;
+    left: 0;
+  }
+  .tc-link-current span:before {
+    content: '\2022';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -20px;
+    transition: 0.5s;
+  }
+  .tc-link-current:hover span {
+    padding-right: 25px;
+  }
+  .tc-link-current:hover span:before {
+    opacity: 1;
+    right: 0;
+  }

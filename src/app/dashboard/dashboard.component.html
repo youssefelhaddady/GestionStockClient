@@ -1,0 +1,71 @@
+<!---div class="hero"-->
+<div class="container-fluid h-100 align-items-center justify-content-center">
+  <div routerLinkActive="active" class="row col-12 h-100 align-items-center justify-content-center" *ngIf="visibleComponent">
+    <div class="row col-12 my-4 justify-content-end">
+      <button (click)="logout()" class="tc-btn tc-btn-light-info tc-border-info-br-r ml-4">
+        <strong> تسجيل الخروج ← </strong>
+      </button>
+    </div>
+    <div class="col-12 justify-content-center align-items-center">
+      <div class="row col-12 my-4">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/commande']">
+            <img
+              width="340"
+              alt="Angular Logo"
+              src="./assets/img/commandee.png"
+            />
+          </a>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/stock']">
+            <img
+              width="350"
+              alt="Angular Logo"
+              src="./assets/img/stockk.png"
+            />
+          </a>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/client']">
+            <img
+              width="350"
+              alt="Angular Logo"
+              src="./assets/img/clients.png"
+            />
+          </a>
+        </div>
+      </div>
+
+      <div class="row col-12 my-4">
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/fournisseur']">
+            <img
+              width="350"
+              alt="Angular Logo"
+              src="./assets/img/fournisseurs.png"
+            />
+          </a>
+        </div>
+        <div *ngIf="isAdmin"  class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/statistique']">
+            <img
+              width="360"
+              alt="Angular Logo"
+              src="./assets/img/stat.png"
+            />
+          </a>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-6 col-xs-12">
+          <a [routerLink]="['/addprod']">
+            <img
+              width="360"
+              alt="Angular Logo"
+              src="./assets/img/add.png"
+            />
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,125 @@
+<div class="main-content text-right">
+  <div class="container-fluid">
+    <div class="row col-12">
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-info card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">people</i>
+            </div>
+            <p class="card-category">عدد الزبائن</p>
+            <h3 class="card-title">
+              <small>أكثر من </small> {{ nombreClients }} <small>زبائن</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-info">arrow_forward</i>
+              <a [routerLink]="['/client']" class="text-info">لائحة الزبائن</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-success card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">supervisor_account</i>
+            </div>
+            <p class="card-category">عدد المزودين</p>
+            <h3 class="card-title">
+              <small>أكثر من </small> {{ nombreFournisseurs }}
+              <small>مزودين</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-success">arrow_forward</i>
+              <a [routerLink]="['/fournisseur']" class="text-success"
+                >لائحة المزودين</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">person_pin</i>
+            </div>
+            <p class="card-category">عدد العمال</p>
+            <h3 class="card-title">
+              <small>أكثر من </small> {{ nombreOuvriers }}
+              <small>عامل</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-primary">arrow_forward</i>
+              <a [routerLink]="['/fournisseur']" class="text-primary"
+                >لائحة العمال</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6 col-sm-6">
+        <div class="card card-stats">
+          <div class="card-header card-header-danger card-header-icon">
+            <div class="card-icon">
+              <i class="material-icons">store</i>
+            </div>
+            <p class="card-category">عدد المنتجات</p>
+            <h3 class="card-title">
+              <small>أكثر من </small> {{ nombreProduits }}
+              <small>منتج</small>
+            </h3>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-danger">arrow_forward</i>
+              <a [routerLink]="['/fournisseur']" class="text-danger"
+                >لائحة المنتجات</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row col-12">
+      <div class="col-md-5">
+        <div class="card card-chart">
+          <div class="card-header card-header-danger">
+            <div class="ct-chart" id="completedTasksChart">
+              <canvas id="linechart" class="height"></canvas>
+            </div>
+          </div>
+          <div class="card-body">
+            <h4 class="card-title text-center">
+              عدد طلبات الزبائن بدلالة الأشهر
+            </h4>
+            <div class="row m-2">
+              <p class="card-category">
+                {{ getCommandeClientWithMaxCountMsg() }}<br />
+                {{ getCommandeClientWithMinCountMsg() }}
+              </p>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="stats">
+              <i class="material-icons text-danger">arrow_forward</i>
+              <a [routerLink]="['/commande']" class="text-danger"
+                >طلبات الزبائن</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

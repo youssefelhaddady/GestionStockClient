@@ -1,0 +1,523 @@
+<div class="main-content mt-1 text-right">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-info">
+            <h3 class="card-title" style="float: right">المستخدمين</h3>
+          </div>
+          <div class="card-body">
+            <div class="row col-12 mb-1">
+              <div class="col-md-4 col-sm-6 col-xs-12 order-sm-2">
+                <mat-form-field class="example-full-width text-center">
+                  <input
+                    matInput
+                    value="{{
+                      currentDateTime | date: 'HH:mm:ss \t\t\t dd/MM/yyyy'
+                    }}"
+                    disabled
+                  />
+                </mat-form-field>
+              </div>
+              <div class="col-md-8 col-sm-6 col-xs-12 order-sm-1">
+                <!-- Button Ajouter modal -->
+                <button
+                  type="button"
+                  class="btn btn-info"
+                  data-toggle="modal"
+                  data-target="#AppUserSaveModal"
+                  (click)="
+                    operation = 'add'; initAppUser(); setPasswordValidators()
+                  "
+                  style="float: right"
+                >
+                  <span style="font-size: 10px;"
+                    ><i class="fas fa-plus"></i
+                  ></span>
+                  إضافة مستخدم
+                </button>
+              </div>
+            </div>
+            <br />
+
+            <!-- appUser datatable -->
+            <div class="col-md-10 col-xs-12 tc-datatable table-responsive">
+              <table
+                datatable
+                [dtOptions]="dtOptions"
+                [dtTrigger]="dtTrigger"
+                class="display nowrap text-center col-12"
+              >
+                <thead class=" text-info">
+                  <tr>
+                    <th>الإسم الكامل</th>
+                    <th>إسم المستخدم</th>
+                    <th class="text-secondary">خيارات</th>
+                  </tr>
+                </thead>
+                <tbody *ngIf="appUsers?.length != 0">
+                  <tr *ngFor="let appUser of appUsers">
+                    <td>
+                      {{ appUser.name }}
+                    </td>
+                    <td>{{ appUser.username }}</td>
+                    <td>
+                      <!-- <button
+                      type="submit"
+                      class="btn btn-info ml-2"
+                      data-toggle="modal"
+                      data-target="#AppUserSaveModal"
+                      (click)="
+                        operation = 'update'; appUserSelectionne = appUser
+                      "
+                      title="كشف كلمة المرور"
+                    >
+                      <span style="font-size: 15px;"
+                        ><i class="far fa-eye"></i
+                      ></span>
+                    </button> -->
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#AppUserSaveModal"
+                        (click)="
+                          operation = 'update';
+                          appUserSelectionne = appUser;
+                          clearePasswordValidators()
+                        "
+                      >
+                        <span class="tc-tooltip-content">تغيير المعلومات</span>
+                        <span><i class="far fa-edit"></i></span>
+                      </button>
+                      <button
+                        type="submit"
+                        class="tc-btn tc-btn-danger tc-tooltip ml-2"
+                        data-toggle="modal"
+                        data-target="#AppUserDeleteModal"
+                        (click)="
+                          operation = 'remove'; appUserSelectionne = appUser
+                        "
+                      >
+                        <span class="tc-tooltip-content"> حذف </span>
+                        <span><i class="fas fa-trash-alt"></i></span>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Datatable end -->
+
+            <!-- Modal Ajouter/Modifier employe -->
+            <div
+              class="modal fade"
+              id="AppUserSaveModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="AppUserSaveModalTitle"
+              aria-hidden="true"
+            >
+              <div
+                class="modal-dialog modal-lg modal-dialog-centered"
+                role="document"
+              >
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5
+                      *ngIf="operation == 'add'"
+                      class="modal-title col-11 text-right"
+                      id="AppUserModalLongTitle"
+                    >
+                      إضافة مستخدم
+                    </h5>
+                    <h5
+                      *ngIf="operation == 'update'"
+                      class="modal-title col-11 text-right"
+                      id="AppUserModalLongTitle"
+                    >
+                      تغيير معلومات المستخدم
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <form class="form-inline" [formGroup]="appUserForm">
+                    <div class="container">
+                      <div class="modal-body text-right">
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="name"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                            >
+                              الإسم الكامل :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="name"
+                              formControlName="name"
+                              [(ngModel)]="appUserSelectionne.name"
+                            />
+                          </div>
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="username"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                            >
+                              إسم المستخدم :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="username"
+                              formControlName="username"
+                              [(ngModel)]="appUserSelectionne.username"
+                              [class.is-invalid]="
+                                username.invalid && username.touched
+                              "
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <div class="form-group col-12">
+                              <label
+                                for="roles"
+                                class="control-label col-md-4 col-sm-12 text-nowrap"
+                                >صلاحيات المستخدم :
+                              </label>
+                              <mat-radio-group
+                                class="col-md-8 col-sm-12"
+                                id="roles"
+                                formControlName="roles"
+                                [(ngModel)]="appUserSelectionne.roles[0].name"
+                              >
+                                <mat-radio-button value="ROLE_USER" class="ml-3"
+                                  >مستخدم عادي</mat-radio-button
+                                >
+                                <mat-radio-button
+                                  value="ROLE_ADMIN"
+                                  class="ml-3"
+                                  >مدير</mat-radio-button
+                                >
+                              </mat-radio-group>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div
+                            class="form-group col-lg-6 col-sm-12"
+                            *ngIf="operation === 'add'"
+                          >
+                            <label
+                              for="password"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >كلمة المرور :
+                            </label>
+                            <input
+                              type="text"
+                              class="form-control col-md-8 col-sm-12"
+                              id="password"
+                              min="0"
+                              maxlength="10"
+                              minlenght="10"
+                              formControlName="password"
+                              [class.is-invalid]="
+                                password.invalid && password.touched
+                              "
+                            />
+                          </div>
+                          <div
+                            class="form-group col-lg-6 col-sm-12"
+                            *ngIf="operation === 'add'"
+                          >
+                            <label
+                              for="password_confirmation"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >تأكيد كلمة المرور :
+                            </label>
+                            <input
+                              class="form-control col-md-8 col-sm-12"
+                              id="password_confirmation"
+                              formControlName="password_confirmation"
+                              [class.is-invalid]="
+                                password_confirmation.invalid &&
+                                password_confirmation.touched &&
+                                password_confirmation === password
+                              "
+                            />
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="form-group col-lg-6 col-sm-12">
+                            <label
+                              for="email"
+                              class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >البريد الالكتروني :
+                            </label>
+                            <input
+                              type="email"
+                              class="form-control col-md-8 col-sm-12"
+                              id="email"
+                              formControlName="email"
+                              [(ngModel)]="appUserSelectionne.email"
+                              [class.is-invalid]="
+                                email.invalid && email.touched
+                              "
+                            />
+                          </div>
+                        </div>
+
+                        <form class="form-inline" [formGroup]="magasinForm">
+                          <div class="row">
+                            <div class="form-group col-lg-6 col-sm-12">
+                              <label
+                                for="nom"
+                                class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >
+                                إسم المخزن :
+                              </label>
+                              <input
+                                type="text"
+                                class="form-control col-md-8 col-sm-12"
+                                id="nom"
+                                formControlName="nom"
+                                [(ngModel)]="appUserSelectionne.magasin.nom"
+                                [class.is-invalid]="nom.invalid && nom.touched"
+                              />
+                            </div>
+                            <div class="form-group col-lg-6 col-sm-12">
+                              <label
+                                for="adresse"
+                                class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >
+                                عنوان المخزن :
+                              </label>
+                              <textarea
+                                class="form-control col-md-8 col-sm-12"
+                                id="adresse"
+                                formControlName="adresse"
+                                [(ngModel)]="appUserSelectionne.magasin.adresse"
+                              ></textarea>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="form-group col-lg-6 col-sm-12">
+                              <label
+                                for="numero_patente"
+                                class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >
+                                رقم الترخيص :
+                              </label>
+                              <input
+                                type="number"
+                                class="form-control col-md-8 col-sm-12"
+                                id="numero_patente"
+                                formControlName="numero_patente"
+                                [(ngModel)]="
+                                  appUserSelectionne.magasin.numero_patente
+                                "
+                              />
+                            </div>
+                            <div class="form-group col-lg-6 col-sm-12">
+                              <label
+                                for="superficie"
+                                class="control-label col-md-4 col-sm-12 text-nowrap"
+                              >
+                                المساحة :
+                              </label>
+                              <input
+                                type="number"
+                                class="form-control col-md-8 col-sm-12"
+                                id="superficie"
+                                formControlName="superficie"
+                                [(ngModel)]="
+                                  appUserSelectionne.magasin.superficie
+                                "
+                              />
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                              <ul
+                                class="text-danger col-12"
+                                *ngIf="
+                                  nom.invalid && (nom.touched || nom.dirty)
+                                "
+                              >
+                                <li>
+                                  يجب ادخال اسم المخزن
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </form>
+
+                        <div class="row">
+                          <div class="mt-5 mb-1 col-md-6 col-sm-12">
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                name.invalid && (name.touched || name.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال اسم العامل
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                operation === 'add' &&
+                                password.invalid &&
+                                (password.touched || password.dirty)
+                              "
+                            >
+                              <li>
+                                يجب ادخال كلمة المرور
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                operation === 'add' &&
+                                password_confirmation.invalid &&
+                                (password_confirmation.touched ||
+                                  password_confirmation.dirty)
+                              "
+                            >
+                              <li>
+                                يجب تأكيد كلمة المرور
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                operation === 'add' &&
+                                password.dirty &&
+                                !isMached()
+                              "
+                            >
+                              <li>
+                                كلمة المرور غير متطابقة
+                              </li>
+                            </ul>
+                            <ul
+                              class="text-danger col-12"
+                              *ngIf="
+                                email.invalid && (email.touched || email.dirty)
+                              "
+                            >
+                              <li>
+                                أدخل بريد الكتروني صالح
+                              </li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                      <br /><br /><br />
+                      <div class="modal-footer">
+                        <button
+                          type="button"
+                          class="btn btn-outline-danger ml-3"
+                          data-dismiss="modal"
+                        >
+                          إلغاء
+                        </button>
+                        <button
+                          type="submit"
+                          class="btn btn-success"
+                          data-dismiss="modal"
+                          [disabled]="
+                            appUserForm.pristine ||
+                            appUserForm.invalid ||
+                            magasinForm.pristine ||
+                            magasinForm.invalid
+                          "
+                          (click)="
+                            operation == 'add'
+                              ? addAppUser()
+                              : operation == 'update'
+                              ? updateAppUser()
+                              : operationError()
+                          "
+                        >
+                          تأكيد
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <!---Modal end -->
+
+            <!-- AppUser Delete Modal -->
+            <div
+              class="modal text-right fade"
+              id="AppUserDeleteModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="AppUserDeleteModalTitle"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5
+                      class="modal-title col-11 text-right"
+                      id="AppUserModalLongTitle"
+                    >
+                      حذف المستخدم
+                    </h5>
+                    <button
+                      type="button"
+                      class="close col-1"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body">
+                    <h3 style="float: right;color:tomato">
+                      هل أنت متأكد أنك تريد حذف المستخدم ؟
+                    </h3>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-outline-success ml-3"
+                      data-dismiss="modal"
+                    >
+                      إلغاء
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-danger"
+                      (click)="deleteAppUser()"
+                      data-dismiss="modal"
+                    >
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal end-->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
