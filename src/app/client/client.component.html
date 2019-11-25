@@ -82,6 +82,7 @@
                         class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
                         data-toggle="modal"
                         data-target="#ClientSaveModal"
+                        *ngIf="client.name !== 'غير معروف'"
                         (click)="
                           operation = 'update'; clientSelectionne = client
                         "
@@ -94,6 +95,7 @@
                         class="tc-btn tc-btn-danger tc-tooltip ml-2"
                         data-toggle="modal"
                         data-target="#ClientDeleteModal"
+                        *ngIf="client.name !== 'غير معروف'"
                         (click)="
                           operation = 'remove'; clientSelectionne = client
                         "

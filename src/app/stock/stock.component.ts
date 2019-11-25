@@ -8,6 +8,7 @@ import { MouvementStockService } from 'app/shared/services/mouvement_stock.servi
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { FeedBackService, COMPONENT_NAME } from 'app/config/feed-back.service';
 import { DataTableHandler } from 'app/config/dataTableHandler';
+import { DELETE_DECISION } from 'app/config/delete_decision.enum';
 
 @Component({
   selector: 'app-stock',
@@ -102,7 +103,7 @@ export class StockComponent extends DataTableHandler implements OnInit {
 
   deleteProduit() {
     // console.log(this.produitSelectionne)
-    this.produitService.delete(this.produitSelectionne.idProduit).subscribe(
+    this.produitService.deleteControlled(this.produitSelectionne.idProduit, DELETE_DECISION.DELETE).subscribe(
       res => {
         this.initProduit();
         this.loadCategories();
@@ -119,7 +120,7 @@ export class StockComponent extends DataTableHandler implements OnInit {
         this.qtes_produits_par_categorie = data;
       },
       error => {
-        console.log(error);
+        // console.log(error);
       }
     );
   }

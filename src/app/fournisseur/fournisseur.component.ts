@@ -7,6 +7,7 @@ import { DataTableDirective } from 'angular-datatables';
 import { Subject } from 'rxjs';
 import { DataTableHandler } from 'app/config/dataTableHandler';
 import { FeedBackService, COMPONENT_NAME, OPERATION_TYPE } from 'app/config/feed-back.service';
+import { DELETE_DECISION } from 'app/config/delete_decision.enum';
 
 @Component({
   selector: 'app-fournisseur',
@@ -80,7 +81,7 @@ export class FournisseurComponent extends DataTableHandler implements OnInit, Af
   loadFournisseurs() {
     this.fournisseurService.getAll().subscribe(
       data => {
-        this.fournisseurs = data
+        this.fournisseurs = data;
         this.rerender();
       },
       error => {
@@ -131,7 +132,7 @@ export class FournisseurComponent extends DataTableHandler implements OnInit, Af
   }
 
   deleteFournisseur() {
-    this.fournisseurService.delete(this.fournisseurSelectionne.idFournisseur).subscribe(
+    this.fournisseurService.deleteControlled(this.fournisseurSelectionne.idFournisseur, DELETE_DECISION.DELETE).subscribe(
       res => {
         this.loadFournisseurs();
         this.feedBackService.FeedBackDelete();

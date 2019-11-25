@@ -1,3 +1,4 @@
+import { DELETE_DECISION } from '../../config/delete_decision.enum';
 import { MagasinE } from 'app/exchange/e_magasin';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -34,5 +35,9 @@ export class CategorieService {
 
   delete(id_categorie: number): Observable<any> {
     return this.http.delete(API_URLS.CATEGORIE_URL + `/${id_categorie}`);
+  }
+
+  deleteControlled(id_categorie: number, decision: DELETE_DECISION){
+    return this.http.delete(API_URLS.CATEGORIE_URL + `/${id_categorie}/${decision}`);
   }
 }

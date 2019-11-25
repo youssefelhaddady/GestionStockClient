@@ -26,11 +26,11 @@ export class AddprodComponent implements OnInit {
   magasin = new MagasinE(); // le magasin lié à l'USER de l'app
 
   // Fournisseur
-  fournisseurs: FournisseurE[] = [];
+  fournisseurs: FournisseurE[] = [];  // tableau des fournisseurs
   indiceFournisseurSelectionne = 0; // selectionnement de fournisseur
 
   // categorie
-  public categories: CategorieE[] = []; // tableau des categories de la liste déroulante (pour faciliter le choix des produits)
+  categories: CategorieE[] = []; // tableau des categories de la liste déroulante (pour faciliter le choix des produits)
   indiceCategorieSelectionne = 0; // selectionnement de la catégorie des produits
 
   // produits
@@ -38,27 +38,25 @@ export class AddprodComponent implements OnInit {
   indiceProduitSelectionne = 0;  // slectionnement du produit
 
   // commnade
-  public commandeTable: CommandeTable[] = []; // le tableau général des produits choisis pour la commande courantes (prod, prix, quantité et somme)
+  commandeTable: CommandeTable[] = []; // le tableau général des produits choisis pour la commande courantes (prod, prix, quantité et somme)
 
   prixLigneCommande = 0; // prix d'achat du produit sélectionné - attribut du formularire de selectionnement de produit
   quantiteLigneCommande = 0; // quantité du produit sélectionné - attribut du formularire de selectionnement de produit
   qts_prods_cat: number[] = [];   // liste contenant les quantites des produits de la categorie sélectionnée
 
   // paiement
-  public reglementTable: ReglementClientE[] = []; // le tableau général des méthodes de paiement/montant de la commande courrante
+  reglementTable: ReglementClientE[] = []; // le tableau général des méthodes de paiement/montant de la commande courrante
   modeLigneReglement: ModeReglementEnum = ModeReglementEnum.ESPECES; // mode du paiement (cheque,espece .. ) - attribut du formulaire de paiement
   montantLigneReglement = 0; // montant qui a été payé pour cette méthode - attribut du formulaire de paiement
 
   montantTotalCmd = 0; // monatant total de la commande actuelle
-  montantTotalReglements = 0; // montant total des différentes méthode de paiement (sert pour la validation de la commande et pour l'affichage du mantant réstant à payer dans le formulaire)
+  montantTotalReglements = 0; // montant total des différentes méthodes de paiement (sert pour la validation de la commande et pour l'affichage du mantant réstant à payer dans le formulaire)
 
   isNewCategorie = false;
 
   addLigneCmdEnabled = true; // activer le bouton ajouter ligne de commande
   addLigneReglmEnabled = true; // activer le bouton ajouter ligne de reglement
   confirmEnabled = false; // désactiver le bouton confirmer commande
-
-  currentCommandeLigne: number;
 
   commandeForm: FormGroup;  // le formulaire général de la page (formulaire de la commande)
   fournisseurForm: FormGroup;
@@ -83,15 +81,6 @@ export class AddprodComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.userService.getUserBoard().subscribe(
-    //   data => {
-    //     this.visibleComponent = true;
-    //   },
-    //   error => {
-    //     this.visibleComponent = false;
-    //   }
-    // );
-
     this.initMagasin();
 
     // loading data using resolvers
@@ -142,6 +131,23 @@ export class AddprodComponent implements OnInit {
     });
   }
 
+  createProduitForm() {
+    this.produitForm = this.formBuilder.group({
+      libelle: '',
+      prixDachat: 0,
+      prixUnitaire: 0,
+      quantite: 0,
+      categorie: 0
+    });
+  }
+
+  createCategorieForm() {
+    this.categorieForm = this.formBuilder.group({
+      label: '',
+      description: ''
+    });
+  }
+
   resetCommandeForm() {
     this.commandeForm.controls.fournisseur.setValue(0);
     this.commandeForm.controls.categorie.setValue(0);
@@ -165,27 +171,11 @@ export class AddprodComponent implements OnInit {
     this.confirmEnabled = false;
   }
 
-  createProduitForm() {
-    this.produitForm = this.formBuilder.group({
-      libelle: '',
-      prixDachat: 0,
-      prixUnitaire: 0,
-      quantite: 0,
-      categorie: 0
-    });
-  }
-
-  createCategorieForm() {
-    this.categorieForm = this.formBuilder.group({
-      label: '',
-      description: ''
-    });
-  }
-
   initMagasin() {
     this.magasin.nom = this.tokenStorageService.getMagasinName();
     this.magasin.idMagasin = this.tokenStorageService.getMagasinId();
   }
+
 
   /*loadQuatitiesForTheCurrentCategorie() {
     const id = this.categories[this.indiceCategorieSelectionne].idCategorie;
@@ -239,6 +229,7 @@ export class AddprodComponent implements OnInit {
     } else {
       categorieTemp = this.categories[produitFormTemp.categorie];
     }
+    this.isNewCategorie = false;
 
     this.commandeTable.push(new CommandeTable(
       new ProduitE(
@@ -303,13 +294,16 @@ export class AddprodComponent implements OnInit {
 
   //  ajouter une ligne de commande (produit/quantité) au tableau commandeTable
   addCommandeLine() {
+    let currentCommandeLigne = 0;
 
-    const produitExistant = this.commandeTable.find(ligne => this.produits[this.indiceProduitSelectionne].libelle === ligne.produit.libelle);
+    const produitExistant = this.commandeTable.find(
+      ligne => this.produits[this.indiceProduitSelectionne].libelle === ligne.produit.libelle
+    );
 
     if (produitExistant) {
-      this.currentCommandeLigne = this.commandeTable.indexOf(produitExistant);
-      this.commandeTable[this.currentCommandeLigne].quantite += this.quantiteLigneCommande;
-      this.commandeTable[this.currentCommandeLigne].somme += this.prixLigneCommande * this.quantiteLigneCommande;
+      currentCommandeLigne = this.commandeTable.indexOf(produitExistant);
+      this.commandeTable[currentCommandeLigne].quantite += this.quantiteLigneCommande;
+      this.commandeTable[currentCommandeLigne].somme += this.prixLigneCommande * this.quantiteLigneCommande;
 
       this.montantTotalCmd += this.prixLigneCommande * this.quantiteLigneCommande;
 
@@ -343,17 +337,17 @@ export class AddprodComponent implements OnInit {
     this.montantLigneReglement -= this.commandeTable[index].somme;
 
     const produitExistant = this.categories.find(categorie => {
-        return categorie.produits.find(produit => {
-          if (produit.idProduit === this.commandeTable[index].produit.idProduit) {
-            const indiceProd = categorie.produits.indexOf(produit);
-            categorie.quantites[indiceProd] += this.commandeTable[index].quantite;
+      return categorie.produits.find(produit => {
+        if (produit.idProduit === this.commandeTable[index].produit.idProduit) {
+          const indiceProd = categorie.produits.indexOf(produit);
+          categorie.quantites[indiceProd] += this.commandeTable[index].quantite;
 
-            /***if (this.produits[this.indiceProduitSelectionne] === produit) {
-              this.quantiteLigneCommande = categorie.quantites[indiceProd];
-            }*/
-            return true;
-          }
-          return false;
+          /***if (this.produits[this.indiceProduitSelectionne] === produit) {
+            this.quantiteLigneCommande = categorie.quantites[indiceProd];
+          }*/
+          return true;
+        }
+        return false;
       }) === null;
     });
 

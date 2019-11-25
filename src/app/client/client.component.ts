@@ -6,6 +6,7 @@ import { ClientService } from 'app/shared/services/client.service';
 import { ClientE } from '../exchange/e_client';
 import { DataTableHandler } from 'app/config/dataTableHandler';
 import { FeedBackService, COMPONENT_NAME, OPERATION_TYPE } from 'app/config/feed-back.service';
+import { DELETE_DECISION } from 'app/config/delete_decision.enum';
 
 @Component({
   selector: 'app-client',
@@ -81,7 +82,7 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
   loadClients() {
     this.clientService.getAll().subscribe(
       data => {
-        this.clients = data
+        this.clients = data;
         this.rerender();
       },
       error => {
@@ -111,8 +112,6 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
   }
 
   updateClient() {
-    // const clientTemp = this.clientForm.value;
-    // clientTemp.idClient = this.clientSelectionne.idClient;
 
     const clientForm = this.clientForm.value;
     const clientTemp = new ClientE(this.clientSelectionne.idClient, clientForm.raison_sociale, clientForm.type, 0,
@@ -134,7 +133,7 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
   }
 
   deleteClient() {
-    this.clientService.delete(this.clientSelectionne.idClient).subscribe(
+    this.clientService.deleteControlled(this.clientSelectionne.idClient, DELETE_DECISION.DELETE).subscribe(
       res => {
         this.loadClients();
         this.feedBackService.FeedBackDelete();

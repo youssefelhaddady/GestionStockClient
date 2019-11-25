@@ -79,6 +79,7 @@
                         class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
                         data-toggle="modal"
                         data-target="#FournisseurSaveModal"
+                        *ngIf="fournisseur.name !== 'غير معروف'"
                         (click)="
                           operation = 'update';
                           fournisseurSelectionne = fournisseur

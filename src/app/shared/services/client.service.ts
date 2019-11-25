@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { API_URLS } from 'app/config/api.url.config';
 import { ClientE } from 'app/exchange/e_client';
+import { DELETE_DECISION } from '../../config/delete_decision.enum';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,9 @@ export class ClientService {
 
   delete(id_client: number): Observable<any>{
       return this.http.delete(API_URLS.CLIENT_URL + `/${id_client}`);
+  }
+
+  deleteControlled(id_client: number, decision: DELETE_DECISION){
+    return this.http.delete(API_URLS.CLIENT_URL + `/${id_client}/${decision}`);
   }
 }

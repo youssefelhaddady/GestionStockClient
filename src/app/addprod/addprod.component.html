@@ -137,7 +137,7 @@
                           المنتوج
                         </label>
                         <label class="col-2" for="prixProduit">
-                          ثمن  الشراء
+                          ثمن الشراء
                         </label>
                         <label class="col-2" for="quantitProduit">
                           الكمية
@@ -158,7 +158,9 @@
                               "
                               value="{{ selected_categorie_index }}"
                             >
-                              {{ cat.label }}
+                              <div>
+                                {{ cat.label }}
+                              </div>
                             </option>
                           </select>
                         </div>
@@ -197,7 +199,7 @@
                         <div class="form-group col-2">
                           <input
                             type="number"
-                            (ngModel)="quantiteLigneCommande"
+                            (ngModel)="(quantiteLigneCommande)"
                             [ngModelOptions]="{ standalone: true }"
                             class="form-control"
                             id="quantitProduit"
@@ -689,8 +691,27 @@
                   <div class="modal-body text-right">
                     <div class="row col-12 align-items-center">
                       <div
+                        class="row col-lg-6 col-sm-12 justify-content-center align-items-center"
+                      >
+                        <div class="custom-control custom-checkbox">
+                          <input
+                            type="checkbox"
+                            class="custom-control-input"
+                            id="newCategorie"
+                            value="{{isNewCategorie}}"
+                            (change)="isNewCategorie = !isNewCategorie"
+                          />
+                          <label
+                            class="custom-control-label"
+                            for="newCategorie"
+                          >
+                            صنف جديد
+                          </label>
+                        </div>
+                      </div>
+                      <div
                         class="form-group col-lg-6 col-sm-12"
-                        *ngIf="!isNewCategorie"
+                        *ngIf="isNewCategorie === false"
                       >
                         <label
                           for="libelle"
@@ -715,28 +736,10 @@
                           </select>
                         </div>
                       </div>
-                      <div
-                        class="row col-lg-6 col-sm-12 justify-content-center align-items-center"
-                      >
-                        <div class="custom-control custom-checkbox">
-                          <input
-                            type="checkbox"
-                            class="custom-control-input"
-                            id="newCategorie"
-                            (change)="isNewCategorie = !isNewCategorie"
-                          />
-                          <label
-                            class="custom-control-label"
-                            for="newCategorie"
-                          >
-                            صنف جديد
-                          </label>
-                        </div>
-                      </div>
                     </div>
                     <div class="row col-12 align-items-center">
                       <form
-                        *ngIf="isNewCategorie"
+                        *ngIf="isNewCategorie === true"
                         class="form-inline  col-12"
                         [formGroup]="categorieForm"
                       >

@@ -93,11 +93,17 @@ export class StatistiqueComponent implements OnInit {
 
   getCommandeClientWithMaxCountMsg(): string {
     const maxCmd = this.getCommandeClientWithMinMaxCount()[1];
-    return 'أعلى عدد طلبات : ' + maxCmd.count + ' (شهر : ' + maxCmd.month + '/' + maxCmd.year + ')';
+    if (maxCmd) {
+      return 'أعلى عدد طلبات : ' + maxCmd.count + ' (شهر : ' + maxCmd.month + '/' + maxCmd.year + ')';
+    }
+    return;
   }
   getCommandeClientWithMinCountMsg(): string {
     const minCmd = this.getCommandeClientWithMinMaxCount()[0];
-    return 'أقل عدد طلبات : ' + minCmd.count + ' (شهر : ' + minCmd.month + '/' + minCmd.year + ')';
+    if (minCmd) {
+      return 'أقل عدد طلبات : ' + minCmd.count + ' (شهر : ' + minCmd.month + '/' + minCmd.year + ')';
+    }
+    return;
   }
 
 }
