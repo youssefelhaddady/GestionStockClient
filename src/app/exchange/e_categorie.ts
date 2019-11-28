@@ -6,7 +6,6 @@ export class CategorieE {
         public idCategorie ?: number,
         public label ?: string,
         public description ?: string,
-        public produits ?: ProduitE[],
-        public quantites ?: number[]
+        public produits ?: ProduitE[]
         ) { }
 }

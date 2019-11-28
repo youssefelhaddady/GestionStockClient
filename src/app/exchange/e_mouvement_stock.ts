@@ -8,6 +8,8 @@ export class MouvementStockE {
     constructor(
         public idMvmtStk?: number,
         public dateMvmt?: Date,
+        public prixAchat?: number,
+        public prixVente?: number,
         public quantite?: number,
         public type?: number,
         public produit?: ProduitE,

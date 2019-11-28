@@ -14,6 +14,7 @@ import { ProduitE } from '../exchange/e_produit';
 import { ReglementClientE } from 'app/exchange/e_reglement_client';
 import { TokenStorageService } from 'app/auth/token.storage.service';
 import { COMPONENT_NAME } from 'app/config/feed-back.service';
+import { DetailProduit } from 'app/exchange/e_detail_produit';
 
 @Component({
   selector: 'app-addprod',
@@ -23,34 +24,45 @@ import { COMPONENT_NAME } from 'app/config/feed-back.service';
 export class AddprodComponent implements OnInit {
   visibleComponent = false;
   currentDateTime = Date.now(); // La date d'aujourd'hui
-  magasin = new MagasinE(); // le magasin lié à l'USER de l'app
+  currentMagasin = new MagasinE(); // le magasin lié à l'USER de l'app
 
-  // Fournisseur
+  /* magasin */
+  magasins: MagasinE[] = [];  // tableau des magasins
+  indiceMagasinSelectionne = 0; // selectionnement de magasin
+
+  /* Fournisseur */
   fournisseurs: FournisseurE[] = [];  // tableau des fournisseurs
   indiceFournisseurSelectionne = 0; // selectionnement de fournisseur
 
-  // categorie
+  /* categorie */
   categories: CategorieE[] = []; // tableau des categories de la liste déroulante (pour faciliter le choix des produits)
   indiceCategorieSelectionne = 0; // selectionnement de la catégorie des produits
 
-  // produits
-  produits: ProduitE[] = [];  // tableau des produits de la liste déroulante qui va se varirer pour l'affichage des produits selon la catégorie sélectionnée
+  /* produits */
+  // tableau des produits de la liste déroulante qui va se varirer pour l'affichage des produits selon la catégorie sélectionnée
+  produits: ProduitE[] = [];
   indiceProduitSelectionne = 0;  // slectionnement du produit
 
-  // commnade
+  /* commnade */
   commandeTable: CommandeTable[] = []; // le tableau général des produits choisis pour la commande courantes (prod, prix, quantité et somme)
 
-  prixLigneCommande = 0; // prix d'achat du produit sélectionné - attribut du formularire de selectionnement de produit
+  prixAchatLigneCommande = 0; // prix d'achat du produit sélectionné - attribut du formularire de selectionnement de produit
+  prixVenteLigneCommande = 0; // prix de vente du produit sélectionné - attribut du formularire de selectionnement de produit
   quantiteLigneCommande = 0; // quantité du produit sélectionné - attribut du formularire de selectionnement de produit
+  /*
   qts_prods_cat: number[] = [];   // liste contenant les quantites des produits de la categorie sélectionnée
+  */
 
-  // paiement
+  /* paiement */
   reglementTable: ReglementClientE[] = []; // le tableau général des méthodes de paiement/montant de la commande courrante
-  modeLigneReglement: ModeReglementEnum = ModeReglementEnum.ESPECES; // mode du paiement (cheque,espece .. ) - attribut du formulaire de paiement
+  // mode du paiement (cheque,espece .. ) - attribut du formulaire de paiement
+  modeLigneReglement: ModeReglementEnum = ModeReglementEnum.ESPECES;
   montantLigneReglement = 0; // montant qui a été payé pour cette méthode - attribut du formulaire de paiement
 
   montantTotalCmd = 0; // monatant total de la commande actuelle
-  montantTotalReglements = 0; // montant total des différentes méthodes de paiement (sert pour la validation de la commande et pour l'affichage du mantant réstant à payer dans le formulaire)
+  // montant total des différentes méthodes de paiement
+  // (sert pour la validation de la commande et pour l'affichage du mantant réstant à payer dans le formulaire)
+  montantTotalReglements = 0;
 
   isNewCategorie = false;
 
@@ -72,7 +84,8 @@ export class AddprodComponent implements OnInit {
 
   get email() { return this.fournisseurForm.get('email') as FormControl; }
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(
+    private formBuilder: FormBuilder,
     private route: ActivatedRoute,
     private tokenStorageService: TokenStorageService,
     private commandeFournisseurService: CommandeFournisseurService,
@@ -81,27 +94,25 @@ export class AddprodComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initMagasin();
+    this.initCurrentMagasin();
 
     // loading data using resolvers
+    this.initMagasins();
+
     this.initFournisseurs();
 
     this.categories = this.route.snapshot.data.categories;
+
     if (this.categories[this.indiceCategorieSelectionne]) {
       this.produits = this.categories[this.indiceCategorieSelectionne].produits;
-
-      // liste contenant les quantites des produits de la première categorie
-      this.qts_prods_cat = this.categories[this.indiceCategorieSelectionne].quantites;
     }
 
     // init atts
     if (this.produits[this.indiceProduitSelectionne]) {
-      this.prixLigneCommande = this.produits[this.indiceProduitSelectionne].prixDachat;
+      this.prixAchatLigneCommande = this.getSelectedLineDetails().prixAchat;
+      this.prixVenteLigneCommande = this.getSelectedLineDetails().prixVente;
+      this.quantiteLigneCommande = this.getSelectedLineDetails().quantite;
     }
-
-    /***if (this.qts_prods_cat.length !== 0) {
-      this.quantiteLigneCommande = this.qts_prods_cat[this.indiceProduitSelectionne];
-    }*/
 
     this.createForm();
     this.createFournisseurForm();
@@ -110,11 +121,23 @@ export class AddprodComponent implements OnInit {
 
   }
 
+  getProductDetail(produit: ProduitE, id_magasin: number): DetailProduit {
+    const d = produit.details.find(
+      detail => detail.idMagasin === id_magasin
+    );
+    return d !== undefined ? d : null;
+  }
+
+  getSelectedLineDetails(): DetailProduit {
+    return this.getProductDetail(this.produits[this.indiceProduitSelectionne], this.magasins[this.indiceMagasinSelectionne].idMagasin);
+  }
+
   createForm() {
     this.commandeForm = this.formBuilder.group({
       fournisseur: 0,
       categorie: 0,
       produit: 0,
+      magasin: 0,
       modeReglement: 'ESPECES',
     })
   }
@@ -149,16 +172,21 @@ export class AddprodComponent implements OnInit {
   }
 
   resetCommandeForm() {
-    this.commandeForm.controls.fournisseur.setValue(0);
-    this.commandeForm.controls.categorie.setValue(0);
+    // this.commandeForm.controls.fournisseur.setValue(0);
+    // this.commandeForm.controls.categorie.setValue(0);
+    this.indiceFournisseurSelectionne = 0;
+    this.indiceMagasinSelectionne = 0;
+    this.indiceCategorieSelectionne = 0;
 
     this.produits = this.categories[0].produits;
-    // this.prixLigneCommande = this.produits[0].prixUnitaire;
-    this.prixLigneCommande = this.produits[0].prixDachat;
-    this.qts_prods_cat = this.categories[0].quantites;
-    this.quantiteLigneCommande = this.qts_prods_cat[0];
 
-    this.commandeForm.controls.produit.setValue(0);
+    this.indiceProduitSelectionne = 0;
+
+    this.prixAchatLigneCommande = this.getProductDetail(this.produits[0], this.magasins[0].idMagasin).prixAchat;
+    this.prixVenteLigneCommande = this.getProductDetail(this.produits[0], this.magasins[0].idMagasin).prixVente;
+    this.quantiteLigneCommande = this.getProductDetail(this.produits[0], this.magasins[0].idMagasin).quantite;
+
+    // this.commandeForm.controls.produit.setValue(0);
     this.montantTotalCmd = 0;
     this.montantTotalReglements = 0;
     this.commandeForm.controls.modeReglement.setValue('ESPECES');
@@ -171,22 +199,14 @@ export class AddprodComponent implements OnInit {
     this.confirmEnabled = false;
   }
 
-  initMagasin() {
-    this.magasin.nom = this.tokenStorageService.getMagasinName();
-    this.magasin.idMagasin = this.tokenStorageService.getMagasinId();
+  initCurrentMagasin() {
+    this.currentMagasin.nom = this.tokenStorageService.getMagasinName();
+    this.currentMagasin.idMagasin = this.tokenStorageService.getMagasinId();
   }
 
-
-  /*loadQuatitiesForTheCurrentCategorie() {
-    const id = this.categories[this.indiceCategorieSelectionne].idCategorie;
-    this.mouvementStockService.getQtByMagProd(id).subscribe(
-      data => {
-        this.qts_prods_cat = data;
-      },
-      error => {
-        console.log(error);
-      });
-  }*/
+  initMagasins() {
+    this.magasins = this.route.snapshot.data.magasins;
+  }
 
   initFournisseurs() {
     this.fournisseurs = this.route.snapshot.data.fournisseurs;
@@ -243,54 +263,7 @@ export class AddprodComponent implements OnInit {
 
     this.montantTotalCmd += produitFormTemp.prixDachat * produitFormTemp.quantite;
     this.montantLigneReglement += produitFormTemp.prixDachat * produitFormTemp.quantite;
-
-    /*const produitTemp = new ProduitE(null, null, produitFormTemp.libelle, null,
-      null, produitFormTemp.prixDachat, produitFormTemp.prixUnitaire,
-      this.categories[produitFormTemp.categorie]);
-
-      console.log(produitTemp);
-
-    this.produitService.add(produitTemp).subscribe(
-      res => {
-        console.log('this product has been added successfully');
-        console.log(produitTemp);
-      },
-      error => {
-        console.error('can\'t add new Produit object.\nerror : ');
-        console.error(error);
-      }
-    );*/
   }
-
-  addCategorie() {
-    /*this.newProduit.categorie = this.newCategorie;
-    const categorieTemp = this.categorieForm.value;
-
-    this.categorieService.add(categorieTemp).subscribe(
-      res => {
-        console.log('this categorie has been added successfully');
-        console.log(categorieTemp);
-      },
-      error => {
-        console.error('can\'t add new categorie object.\nerror : ');
-        console.error(error);
-      }
-    );*/
-  }
-
-
-
-  // loadQuatitiesForTheCurrentCategorie() {
-  //   const id = this.categories[this.indiceCategorieSelectionne].idCategorie;
-  //   this.mouvementStockService.getQtByMagProd(id).subscribe(
-  //     data => {
-  //       this.qts_prods_cat = data;
-  //     },
-  //     error => {
-  //       console.log(error);
-  //     });
-  // }
-
 
   //  ajouter une ligne de commande (produit/quantité) au tableau commandeTable
   addCommandeLine() {
@@ -303,16 +276,16 @@ export class AddprodComponent implements OnInit {
     if (produitExistant) {
       currentCommandeLigne = this.commandeTable.indexOf(produitExistant);
       this.commandeTable[currentCommandeLigne].quantite += this.quantiteLigneCommande;
-      this.commandeTable[currentCommandeLigne].somme += this.prixLigneCommande * this.quantiteLigneCommande;
+      this.commandeTable[currentCommandeLigne].somme += this.prixAchatLigneCommande * this.quantiteLigneCommande;
 
-      this.montantTotalCmd += this.prixLigneCommande * this.quantiteLigneCommande;
+      this.montantTotalCmd += this.prixAchatLigneCommande * this.quantiteLigneCommande;
 
-      this.montantLigneReglement += this.prixLigneCommande * this.quantiteLigneCommande;
+      this.montantLigneReglement += this.prixAchatLigneCommande * this.quantiteLigneCommande;
     } else {
       const commandeTableTemp = new CommandeTable(
         this.produits[this.indiceProduitSelectionne],
         this.quantiteLigneCommande,
-        this.prixLigneCommande * this.quantiteLigneCommande
+        this.prixAchatLigneCommande * this.quantiteLigneCommande
       );
       this.commandeTable.push(commandeTableTemp); // ajouter cette ligne de commande au tableau général des commandes
 
@@ -321,7 +294,9 @@ export class AddprodComponent implements OnInit {
       this.montantLigneReglement += commandeTableTemp.somme;
     }
 
+    /*
     this.qts_prods_cat[this.indiceProduitSelectionne] -= this.quantiteLigneCommande;
+    */
     /***
      this.quantiteLigneCommande = this.qts_prods_cat[this.indiceProduitSelectionne];
      */
@@ -340,8 +315,9 @@ export class AddprodComponent implements OnInit {
       return categorie.produits.find(produit => {
         if (produit.idProduit === this.commandeTable[index].produit.idProduit) {
           const indiceProd = categorie.produits.indexOf(produit);
+          /*
           categorie.quantites[indiceProd] += this.commandeTable[index].quantite;
-
+          */
           /***if (this.produits[this.indiceProduitSelectionne] === produit) {
             this.quantiteLigneCommande = categorie.quantites[indiceProd];
           }*/
@@ -429,6 +405,18 @@ export class AddprodComponent implements OnInit {
     }
   }
 
+  magasinSelectChange(args) {
+    this.indiceMagasinSelectionne = args.target.value;  // indice de la categorie sélectionnée
+    const detail = this.getSelectedLineDetails();
+    if (detail !== null) {
+      this.prixAchatLigneCommande = detail.prixAchat;
+      this.prixVenteLigneCommande = detail.prixVente;
+      this.quantiteLigneCommande = detail.quantite;
+    } else {
+      this.prixAchatLigneCommande = this.prixVenteLigneCommande = this.quantiteLigneCommande = -1;
+    }
+  }
+
   categorieSelectChange(args) {
     this.indiceCategorieSelectionne = args.target.value;  // indice de la categorie sélectionnée
 
@@ -436,13 +424,21 @@ export class AddprodComponent implements OnInit {
       // remplir le tebleau des produits
       this.produits = this.categories[this.indiceCategorieSelectionne].produits;
       // chargement de la liste des quantités des produits de la catégorie sélectionnée
+      /*
       this.qts_prods_cat = this.categories[this.indiceCategorieSelectionne].quantites;
+      */
     }
 
     this.indiceProduitSelectionne = 0;  // réinitialiser l'indice de produit sélectionné
+    this.commandeForm.controls.produit.setValue(0);  // réinitialiser l'indice de produit sélectionné
     if (this.produits[0]) {
-      this.prixLigneCommande = this.produits[0].prixDachat;
-      this.quantiteLigneCommande = this.qts_prods_cat[0];
+      this.indiceMagasinSelectionne = 0;
+      this.commandeForm.controls.magasin.setValue(0);
+      const detail = this.getSelectedLineDetails();
+
+      this.prixAchatLigneCommande = detail.prixAchat;
+      this.prixVenteLigneCommande = detail.prixVente;
+      this.quantiteLigneCommande = detail.quantite;
     } else {
       this.feedBackService.feedBackCustom('تحميل معلومات',
         'خطأ في تحميل المنتجات للفئة المختارة ' + this.categories[this.indiceCategorieSelectionne].label,
@@ -455,8 +451,13 @@ export class AddprodComponent implements OnInit {
     this.indiceProduitSelectionne = args.target.value; // indice du produit sélectionné
 
     if (this.produits[this.indiceProduitSelectionne]) {
-      this.prixLigneCommande = this.produits[this.indiceProduitSelectionne].prixDachat;
-      this.quantiteLigneCommande = this.qts_prods_cat[this.indiceProduitSelectionne];
+      this.indiceMagasinSelectionne = 0;
+      this.commandeForm.controls.magasin.setValue(0);
+      const detail = this.getSelectedLineDetails();
+
+      this.prixAchatLigneCommande = detail.prixAchat;
+      this.prixVenteLigneCommande = detail.prixVente;
+      this.quantiteLigneCommande = detail.quantite;
     } else {
       this.feedBackService.feedBackCustom('تحميل معلومات',
         'خطأ في تحميل المنتجات للفئة المختارة ' + this.categories[this.indiceCategorieSelectionne].label,
@@ -481,17 +482,69 @@ export class AddprodComponent implements OnInit {
     }
   }
 
-  quantiteLigneCommandeFocusOut() {
-    const quantiteOrigine = this.categories[this.indiceCategorieSelectionne].quantites[this.indiceProduitSelectionne];
+  prixAchatLigneCommandeFocusOut() {
+    // if (this.prixAchatLigneCommande <= 0) {
+    //   this.feedBackService.feedBackCustom('ثمن المنتج', 'ثمن المنتج أقل من الصفر ؟؟؟', 'error');
+    //   document.getElementById('prixProduit').className = 'form-control tc-form-control-error';
+    //   this.addLigneCmdEnabled = false;
+    // } else {
+    //   document.getElementById('prixProduit').className = 'form-control';
+    //   this.addLigneCmdEnabled = true;
+    // }
+  }
 
+  prixVenteLigneCommandeFocusOut() {
+    // if (this.prixVenteLigneCommande <= 0) {
+    //   this.feedBackService.feedBackCustom('ثمن المنتج', 'ثمن المنتج أقل من الصفر ؟؟؟', 'error');
+    //   document.getElementById('prixProduit').className = 'form-control tc-form-control-error';
+    //   this.addLigneCmdEnabled = false;
+    // } else {
+    //   document.getElementById('prixProduit').className = 'form-control';
+    //   this.addLigneCmdEnabled = true;
+    // }
+  }
+
+  quantiteLigneCommandeFocusOut(arg) {
+    /*
+    const quantiteOrigine = this.categories[this.indiceCategorieSelectionne].quantites[this.indiceProduitSelectionne];
+    */
+    // const quantiteOrigine = this.getSelectedLineDetails().quantite;
+    // const quantiteInput = arg.target.value;
+
+    // if (quantiteInput <= 0) {
+    //   this.feedBackService.feedBackCustom('كمية المنتج', 'كمية المنتج أقل من الصفر ؟؟؟', 'error');
+    //   document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
+    //   this.addLigneCmdEnabled = false;
+    // } else if (quantiteInput > quantiteOrigine) {
+    //   this.feedBackService.feedBackCustom('كمية المنتج', 'الكمية المطلوبة تتجاوز الكمية المتاحة في المخزون', 'error');
+    //   document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
+    //   this.addLigneCmdEnabled = false;
+    // } else {
+    //   document.getElementById('quantitProduit').className = 'form-control';
+    //   this.addLigneCmdEnabled = true;
+    // }
+  }
+
+  isAddLigneCmdBtnEnabled(): boolean {
+    /*
+    const quantiteOrigine = this.categories[this.indiceCategorieSelectionne].quantites[this.indiceProduitSelectionne];
+    */
+    /*const quantiteOrigine = this.getSelectedLineDetails().quantite;
+
+    if (this.prixAchatLigneCommande <= 0) {
+      this.feedBackService.feedBackCustom('ثمن المنتج', 'ثمن المنتج أقل من الصفر.', 'error');
+      return false;
+    }
+    if (this.quantiteLigneCommande <= 0) {
+      this.feedBackService.feedBackCustom('كمية المنتج', 'كمية المنتج أقل من الصفر ؟؟؟', 'error');
+      return false;
+    }
     if (this.quantiteLigneCommande > quantiteOrigine) {
       this.feedBackService.feedBackCustom('كمية المنتج', 'الكمية المطلوبة تتجاوز الكمية المتاحة في المخزون', 'error');
-      document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
-      this.addLigneCmdEnabled = false;
-    } else {
-      document.getElementById('quantitProduit').className = 'form-control';
-      this.addLigneCmdEnabled = true;
-    }
+      return false;
+    }*/
+
+    return true;
   }
 
   sortCommandeTableByProduitId() {
@@ -526,7 +579,7 @@ export class AddprodComponent implements OnInit {
       cmd.reglements.push(element);
     });
 
-    cmd.idMagasin = this.magasin.idMagasin;
+    cmd.idMagasin = this.currentMagasin.idMagasin;
 
     this.commandeFournisseurService.add(cmd).subscribe(
       data => {

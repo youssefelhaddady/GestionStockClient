@@ -21,7 +21,7 @@ import { TokenStorageService } from 'app/auth/token.storage.service';
   styleUrls: ['./commande.component.css']
 })
 
-export class CommandeComponent implements OnInit {
+export class CommandeComponent implements OnInit {/*
 
   currentDateTime = Date.now(); // La date d'aujourd'hui
   magasin = new MagasinE(); // le magasin lié à l'USER de l'app
@@ -80,8 +80,8 @@ export class CommandeComponent implements OnInit {
     private clientService: ClientService,
     private feedBackService: FeedBackService) {
   }
-
-  ngOnInit() {
+*/
+  ngOnInit() {/*
     this.initMagasin();
 
     // loading data using resolvers
@@ -102,9 +102,9 @@ export class CommandeComponent implements OnInit {
     this.quantiteLigneCommande = this.getProductQuantity(this.indiceProduitSelectionne);
 
     this.createForm();
-    this.createClientForm();
+    this.createClientForm();*/
   }
-
+/*
   createForm() {
     this.commandeForm = this.formBuilder.group({
       client: 0,
@@ -171,7 +171,7 @@ export class CommandeComponent implements OnInit {
     this.paiementForm.removeAt(index);
   }*/
 
-  initMagasin() {
+  /*initMagasin() {
     this.magasin.nom = this.tokenStorageService.getMagasinName();
     this.magasin.idMagasin = this.tokenStorageService.getMagasinId();
   }
@@ -187,7 +187,7 @@ export class CommandeComponent implements OnInit {
       });
   }*/
 
-  initClients() {
+  /*initClients() {
     this.clients = this.route.snapshot.data.clients;
     this.clients.push(new ClientE(0, null, null, 0, null, 'زبون جديد ...'));
   }
@@ -480,5 +480,5 @@ export class CommandeComponent implements OnInit {
     }
 
     return -1;
-  }
+  }*/
 }

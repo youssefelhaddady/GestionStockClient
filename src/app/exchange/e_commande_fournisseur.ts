@@ -20,6 +20,7 @@ export class CommandeFournisseurE {
 export class CommandeTable {
     constructor(
         public produit?: ProduitE,
+        public prix?: number,
         public quantite?: number,
         public somme?: number
     ) { }

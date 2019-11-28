@@ -27,6 +27,7 @@ import { ChargeResolver } from 'app/shared/resolvers/charge.resolver';
 import { TypeChargeResolver } from 'app/shared/resolvers/typeCharge.resolver';
 import { MouvementStockResolver } from 'app/shared/resolvers/mouvement_stock.resolver';
 import { StatClientCountResolver, StatCommandesClientCountResolver } from 'app/shared/resolvers/statistiques.resolver';
+import { MagasinResolver } from 'app/shared/resolvers/magasin.resolver';
 
 
 export const AdminLayoutRoutes: Routes = [
@@ -90,8 +91,9 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'upgrade', component: UpgradeComponent },
     {
         path: 'addprod', component: AddprodComponent, resolve: {
+            magasins : MagasinResolver,
             fournisseurs: FournisseurResolver,
-            categories: CategorieRosolverForClientCommandes,
+            categories: CategorieRosolver,
             // qts_prods_first_cat: MouvementStockResolver
         }
     },

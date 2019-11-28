@@ -10,9 +10,16 @@ import { MagasinService } from '../services/magasin.service';
 export class MagasinResolver implements Resolve<any> {
 
 
-    constructor(private magasinService: MagasinService, private tokenStorage: TokenStorageService) {}
+    constructor(private magasinService: MagasinService) {}
 
     resolve() {
-        return this.magasinService.getByUsername(this.tokenStorage.getUsername());
+        return this.magasinService.getAll();
     }
+
+
+    // constructor(private magasinService: MagasinService, private tokenStorage: TokenStorageService) {}
+
+    // resolve() {
+    //     return this.magasinService.getByUsername(this.tokenStorage.getUsername());
+    // }
 }
