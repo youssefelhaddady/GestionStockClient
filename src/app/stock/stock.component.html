@@ -37,15 +37,13 @@
             </div>
 
             <div
-              class="row col-12 align-items-center justify-content-center m-0"
+              class="row col-12 align-items-center justify-content-center m-2"
             >
-              <div class="form-group col-md-2 col-sm-4 col-xs-12">
-                <label for="categorie">
-                  <h3 class="text-primary text-nowrap">إختر الصنف :</h3>
+              <div class="form-row col-md-12 col-sm-12 col-xs-12">
+                <label class="col-4" for="categorie">
+                  <h5 class="text-secondary text-nowrap">إختر الصنف :</h5>
                 </label>
-              </div>
-              <div class="form-group col-md-6 col-sm-8 col-xs-12">
-                <div>
+                <div class="col-8">
                   <select
                     class="form-control"
                     id="categorie"
@@ -63,6 +61,28 @@
                   </select>
                 </div>
               </div>
+              <div class="form-row col-md-12 col-sm-12 col-xs-12">
+                <label class="col-4" for="magasin">
+                  <h5 class="text-secondary text-nowrap">المخزن :</h5>
+                </label>
+                <div class="col-8">
+                  <select
+                    class="form-control"
+                    id="magasin"
+                    (change)="magasinSelectChange($event)"
+                  >
+                    <option
+                      *ngFor="
+                        let magasin of magasins;
+                        let selected_magasin_index = index
+                      "
+                      value="{{ selected_magasin_index }}"
+                    >
+                      {{ magasin.nom }}
+                    </option>
+                  </select>
+                </div>
+              </div>
             </div>
 
             <!-- produit datatable -->
@@ -76,8 +96,8 @@
                   <tr>
                     <th>إسم المنتوج</th>
                     <th>الكمية المتاحة</th>
-                    <th>وزن الوحدة</th>
-                    <th>الثمن</th>
+                    <th>ثمن الشراء</th>
+                    <th>ثمن البيع</th>
                     <th class="text-secondary">خيارات</th>
                   </tr>
                 </thead>
@@ -89,16 +109,16 @@
                       {{ produit.libelle }}
                     </td>
                     <td>
-                      {{ this.getQuantiteForEachProduct(produit_index) }}
+                      {{ getQuantite(produit) }}
                     </td>
                     <td>
-                      {{ produit.prixDachat }}
+                      {{ getPrixAchat(produit) }}
                     </td>
                     <td>
-                      {{ produit.prixUnitaire }}
+                      {{ getPrixVente(produit) }}
                     </td>
                     <td>
-                      <button
+                      <!-- <button
                         type="submit"
                         class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
                         data-toggle="modal"
@@ -109,7 +129,7 @@
                       >
                         <span class="tc-tooltip-content">تغيير المعلومات</span>
                         <span><i class="far fa-edit"></i></span>
-                      </button>
+                      </button> -->
                       <button
                         type="submit"
                         class="tc-btn tc-btn-danger tc-tooltip ml-2"
@@ -306,7 +326,7 @@
                       class="modal-title col-11 text-right"
                       id="ProduitModalLongTitle"
                     >
-                      حذف المزود
+                      حذف المنتوج
                     </h5>
                     <button
                       type="button"
@@ -319,7 +339,7 @@
                   </div>
                   <div class="modal-body">
                     <h3 style="float: right;color:tomato">
-                      هل أنت متأكد أنك تريد حذف المزود ؟
+                      هل أنت متأكد أنك تريد حذف المنتوج ؟
                     </h3>
                   </div>
                   <div class="modal-footer">

@@ -9,6 +9,8 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { FeedBackService, COMPONENT_NAME } from 'app/config/feed-back.service';
 import { DataTableHandler } from 'app/config/dataTableHandler';
 import { DELETE_DECISION } from 'app/config/delete_decision.enum';
+import { DetailProduit } from 'app/exchange/e_detail_produit';
+import { MagasinE } from 'app/exchange/e_magasin';
 
 @Component({
   selector: 'app-stock',
@@ -18,16 +20,24 @@ import { DELETE_DECISION } from 'app/config/delete_decision.enum';
 export class StockComponent extends DataTableHandler implements OnInit {
 
   currentDateTime = Date.now();
+  currentMagasin = new MagasinE(); // le magasin lié à l'USER de l'app
+
+  /* magasin */
+  magasins: MagasinE[] = [];  // tableau des magasins
+  indiceMagasinSelectionne = 0; // selectionnement de magasin
+
+  /* categorie */
   categories: CategorieE[] = [];
+  indiceCategorieSelectionne = 0;
+
+  /* produits */
   produits: ProduitE[] = [];
+  produitSelectionne: ProduitE;
 
   produitForm: FormGroup;
 
   operation = 'add';
-  produitSelectionne: ProduitE;
 
-  qtes_produits_par_categorie: number[] = [];
-  indice_categorie_selectionnee = 0;
 
   constructor(private formBuilder: FormBuilder,
     private route: ActivatedRoute,
@@ -41,9 +51,14 @@ export class StockComponent extends DataTableHandler implements OnInit {
   ngOnInit() {
     this.initProduit();
     this.initDataTable();
+
+    // loading data using resolvers
+    this.initMagasins();
+
     this.categories = this.route.snapshot.data.categories;
-    this.produits = this.categories[this.indice_categorie_selectionnee].produits;
-    this.loadQuatitiesForTheCurrentCategorie();
+    if (this.categories[this.indiceCategorieSelectionne]) {
+      this.produits = this.categories[this.indiceCategorieSelectionne].produits;
+    }
   }
 
   ngAfterViewInit() {
@@ -60,6 +75,10 @@ export class StockComponent extends DataTableHandler implements OnInit {
     this.createForms();
   }
 
+  initMagasins() {
+    this.magasins = this.route.snapshot.data.magasins;
+  }
+
   createForms() {
     this.produitForm = this.formBuilder.group({
       libelle: '',
@@ -71,14 +90,19 @@ export class StockComponent extends DataTableHandler implements OnInit {
 
   loadCategories() {
     this.categorieService.getAll().subscribe(
-      data => { this.categories = data },
+      data => {
+        this.categories = data;
+        if (this.categories[this.indiceCategorieSelectionne]) {
+          this.produits = this.categories[this.indiceCategorieSelectionne].produits;
+        }
+      },
       error => { console.log('An error was occured on laoding categories.\nerror : ' + error) }
     )
   }
 
   addProduit() {
     const produitTemp = this.produitForm.value;
-    produitTemp.categorie = this.categories[this.indice_categorie_selectionnee];
+    produitTemp.categorie = this.categories[this.indiceCategorieSelectionne];
 
     // console.log(produitTemp);
     this.produitService.add(produitTemp).subscribe(
@@ -114,24 +138,50 @@ export class StockComponent extends DataTableHandler implements OnInit {
     console.log('operation not founded !');
   }
 
-  loadQuatitiesForTheCurrentCategorie() {
-    this.mouvementStockService.getQtByMagProd(this.categories[this.indice_categorie_selectionnee].idCategorie).subscribe(
-      data => {
-        this.qtes_produits_par_categorie = data;
-      },
-      error => {
-        // console.log(error);
-      }
-    );
-  }
-
-  getQuantiteForEachProduct(i: number) {
-    return this.qtes_produits_par_categorie[i];
-  }
-
   selectCategorieChange(args) {
-    this.indice_categorie_selectionnee = args.target.value;
-    this.produits = this.categories[this.indice_categorie_selectionnee].produits;
-    this.loadQuatitiesForTheCurrentCategorie();
+    this.indiceCategorieSelectionne = args.target.value;
+    if (this.categories[this.indiceCategorieSelectionne]) {
+      // remplir le tebleau des produits
+      this.produits = this.categories[this.indiceCategorieSelectionne].produits;
+    }
   }
+
+  magasinSelectChange(args) {
+    this.indiceMagasinSelectionne = args.target.value;  // indice de la categorie sélectionnée
+  }
+
+  getProductDetail(produit: ProduitE): DetailProduit {
+    const mag = this.magasins[this.indiceMagasinSelectionne];
+    if (mag === undefined || mag === null) {
+      return null;
+    }
+
+    const d = produit.details.find(
+      detail => detail.idMagasin === mag.idMagasin
+    );
+    return d !== undefined ? d : null;
+  }
+
+  getQuantite(produit: ProduitE): number {
+    // return this.qtes_produits_par_categorie[i];
+    if (this.getProductDetail(produit)) {
+      return this.getProductDetail(produit).quantite;
+    }
+    return -1;
+  }
+
+  getPrixAchat(produit: ProduitE): number {
+    if (this.getProductDetail(produit)) {
+      return this.getProductDetail(produit).prixAchat;
+    }
+    return -1;
+  }
+
+  getPrixVente(produit: ProduitE): number {
+    if (this.getProductDetail(produit)) {
+      return this.getProductDetail(produit).prixVente;
+    }
+    return -1;
+  }
+
 }

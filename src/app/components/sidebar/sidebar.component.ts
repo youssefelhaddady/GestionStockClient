@@ -21,7 +21,7 @@ export const ROUTES: RouteInfo[] = [
   { path: '/fournisseur', title: 'المزودون', visible: false, icon: '', class: '' },
   { path: '/charge', title: 'التكاليف', visible: false, icon: '', class: '' },
   { path: '/employe', title: 'العمال', visible: false, icon: '', class: '' },
-  { path: '/app_users', title: '  المستخدمين ', visible: false, icon: '', class: '' },
+  // { path: '/app_users', title: '  المستخدمين ', visible: false, icon: '', class: '' },
   { path: '/statistique', title: 'الإحصائيات', visible: false, icon: '', class: '' },
   // { path: '/notifications', title: 'Notifications',  icon:'', class: '' },
 ];

@@ -85,7 +85,7 @@ export const AdminLayoutRoutes: Routes = [
         }
     },
     { path: 'client', component: ClientComponent, resolve: { clients: ClientResolver } },
-    { path: 'stock', component: StockComponent, resolve: { categories: CategorieRosolver } },
+    { path: 'stock', component: StockComponent, resolve: { magasins : MagasinResolver, categories: CategorieRosolver } },
     { path: 'fournisseur', component: FournisseurComponent, resolve: { fournisseurs: FournisseurResolver } },
     { path: 'maps', component: MapsComponent },
     { path: 'notifications', component: NotificationsComponent },
