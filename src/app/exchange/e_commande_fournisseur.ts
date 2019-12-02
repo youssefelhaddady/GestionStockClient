@@ -1,3 +1,4 @@
+import { MagasinE } from './e_magasin';
 import { ProduitE } from './e_produit';
 import { FournisseurE } from './e_fournisseur';
 import { LigneCmdFournisseurE } from './e_ligne_cmd_fournisseur';
@@ -20,9 +21,11 @@ export class CommandeFournisseurE {
 export class CommandeTable {
     constructor(
         public produit?: ProduitE,
-        public prix?: number,
+        public prixAchat?: number,
+        public prixVente?: number,
         public quantite?: number,
-        public somme?: number
+        public somme?: number,
+        public magasin?: MagasinE
     ) { }
 }
 

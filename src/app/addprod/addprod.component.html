@@ -28,13 +28,17 @@
                           value="{{
                             currentDateTime | date: 'HH:mm:ss   dd/MM/yyyy'
                           }}"
-                          disabled
+                          disabled="disabled"
                         />
                       </mat-form-field>
                     </div>
                     <div class="col-sm-5 col-xs-12">
                       <mat-form-field class="example-full-width text-center">
-                        <input matInput value="{{ currentMagasin.nom }}" disabled />
+                        <input
+                          matInput
+                          value="{{ currentMagasin.nom }}"
+                          disabled="disabled"
+                        />
                       </mat-form-field>
                     </div>
                   </div>
@@ -112,16 +116,16 @@
                         <label class="col-4" for="produit">
                           المنتوج
                         </label>
-                        <label class="col-2" for="prixProduit">
+                        <label class="col-2" for="prixAchat">
                           ثمن الشراء
                         </label>
-                        <label class="col-2" for="prixProduit">
+                        <label class="col-2" for="prixVente">
                           ثمن البيع
                         </label>
                         <label class="col-2" for="quantitProduit">
                           الكمية
                         </label>
-                        <label class="col-2" for="quantitProduit">
+                        <label class="col-2" for="magasin">
                           المخزن
                         </label>
                       </div>
@@ -191,9 +195,9 @@
                         <div class="form-group col-2">
                           <input
                             type="number"
-                            (ngModel)="quantiteLigneCommande"
-                            placeholder="{{quantiteLigneCommande}}"
+                            [(ngModel)]="reset"
                             [ngModelOptions]="{ standalone: true }"
+                            placeholder="{{ quantiteLigneCommande }}"
                             class="form-control"
                             id="quantitProduit"
                             (focusout)="quantiteLigneCommandeFocusOut($event)"
@@ -226,7 +230,7 @@
                             id="btn_commandeTableItem"
                             class="btn btn-warning btn-sm"
                             (click)="addCommandeLine()"
-                            [disabled]="!isAddLigneCmdBtnEnabled()"
+                            [disabled]="!addLigneCmdEnabled"
                           >
                             <h4 class="m-0">+ إضافة</h4>
                           </button>
@@ -241,7 +245,9 @@
                     >
                       <thead class="text-success">
                         <th>المنتوج</th>
-                        <th>الثمن</th>
+                        <th>المخزن</th>
+                        <th>ثمن الشراء</th>
+                        <th>ثمن البيع</th>
                         <th>الكمية</th>
                         <th>المجموع</th>
                         <th>حذف</th>
@@ -257,7 +263,13 @@
                             {{ commandeTableItem.produit.libelle }}
                           </td>
                           <td>
-                            {{ commandeTableItem.prix }}
+                            {{ commandeTableItem.magasin.nom }}
+                          </td>
+                          <td>
+                            {{ commandeTableItem.prixAchat }}
+                          </td>
+                          <td>
+                            {{ commandeTableItem.prixVente }}
                           </td>
                           <td>
                             {{ commandeTableItem.quantite }}
@@ -306,7 +318,7 @@
                           [value]="montantTotalCmd"
                           class="form-control col-6"
                           id="montantTotalCmd"
-                          disabled
+                          disabled="disabled"
                         />
                       </div>
 
@@ -323,7 +335,7 @@
                           [value]="commandeTable.length"
                           class="form-control col-6"
                           id="nbProducts"
-                          disabled
+                          disabled="disabled"
                         />
                       </div>
                     </div>
@@ -352,6 +364,7 @@
                             id="montantReglement"
                             [(ngModel)]="montantLigneReglement"
                             [ngModelOptions]="{ standalone: true }"
+                            (focusout)="montantLigneReglementFocusOut($event)"
                           />
                         </div>
 
@@ -692,6 +705,27 @@
               <form class="form-inline" [formGroup]="produitForm">
                 <div class="container">
                   <div class="modal-body text-right">
+                    <!-- <div class="row col-12 align-items-center">
+                      <div
+                        class="row col-lg-6 col-sm-12 justify-content-center align-items-center"
+                      >
+                        <select
+                          class="form-control col-12"
+                          id="magasin"
+                          formControlName="magasin"
+                        >
+                          <option
+                            *ngFor="
+                              let magasin of magasins;
+                              let selected_magasin_index = index
+                            "
+                            value="{{ selected_magasin_index }}"
+                          >
+                            {{ magasin.nom }}
+                          </option>
+                        </select>
+                      </div>
+                    </div> -->
                     <div class="row col-12 align-items-center">
                       <div
                         class="row col-lg-6 col-sm-12 justify-content-center align-items-center"
@@ -701,8 +735,8 @@
                             type="checkbox"
                             class="custom-control-input"
                             id="newCategorie"
-                            value="{{isNewCategorie}}"
-                            (change)="isNewCategorie = !isNewCategorie"
+                            [(ngModel)]="isNewCategorie"
+                            [ngModelOptions]="{ standalone: true }"
                           />
                           <label
                             class="custom-control-label"
