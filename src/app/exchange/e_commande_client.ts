@@ -20,17 +20,6 @@ export class CommandeClientE {
     ) { }
 }
 
-export class CommandeTable {
-    constructor(
-        public categorieName?: string,
-        public productName?: string,
-        public productId?: number,
-        public prix?: number,
-        public quantite?: number,
-        public somme?: number
-    ) { }
-}
-
 export class CommandeClientAddingRequest extends CommandeClientE {
     constructor(
         public idMagasin?: number,

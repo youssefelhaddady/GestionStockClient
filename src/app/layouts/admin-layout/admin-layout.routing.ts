@@ -77,9 +77,10 @@ export const AdminLayoutRoutes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
     {
         path: 'commande', component: CommandeComponent, resolve: {
-            // magasin : MagasinResolver,
+            magasins : MagasinResolver,
             clients: ClientResolver,
-            categories: CategorieRosolverForClientCommandes,
+            categories: CategorieRosolver
+            // categories: CategorieRosolverForClientCommandes,
             // qts_prods_first_cat: MouvementStockResolver
         }
     },

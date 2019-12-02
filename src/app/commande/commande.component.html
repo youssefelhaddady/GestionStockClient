@@ -11,7 +11,8 @@
               <!-- general informations card -->
               <div class="card col-12 _informations_card">
                 <div
-                  class="card-header card-header-primary mr-0 col-md-12 col-sm-12 col-xs-12 p-1" style="background:linear-gradient(60deg,#218bf3,#218bf3)"
+                  class="card-header card-header-primary mr-0 col-md-12 col-sm-12 col-xs-12 p-1"
+                  style="background:linear-gradient(60deg,#218bf3,#218bf3)"
                 >
                   <h4 class="card-title mx-2">
                     معلومات عامة
@@ -26,13 +27,17 @@
                           value="{{
                             currentDateTime | date: 'HH:mm:ss   dd/MM/yyyy'
                           }}"
-                          disabled
+                          disabled="disabled"
                         />
                       </mat-form-field>
                     </div>
                     <div class="col-sm-5 col-xs-12">
                       <mat-form-field class="example-full-width text-center">
-                        <input matInput value="{{ magasin.nom }}" disabled />
+                        <input
+                          matInput
+                          value="{{ currentMagasin.nom }}"
+                          disabled="disabled"
+                        />
                       </mat-form-field>
                     </div>
                   </div>
@@ -145,7 +150,9 @@
 
               <div class="row col-12 mt-1 mx-0 p-0 justify-content-center">
                 <!-- selecting products card -->
-                <div class="card col-12 col-md-8 col-lg-7 col-xl-6 py-2 _products_card">
+                <div
+                  class="card col-12 col-md-8 col-lg-7 col-xl-6 py-2 _products_card"
+                >
                   <div
                     class="card-header card-header-warning mr-0 col-md-12 col-sm-12 col-xs-12 p-1"
                     style="max-height: 36px !important"
@@ -166,11 +173,8 @@
                         <label class="col-4" for="produit">
                           المنتوج
                         </label>
-                        <label class="col-2" for="prixProduit">
-                          الثمن
-                        </label>
-                        <label class="col-2" for="quantitProduit">
-                          الكمية
+                        <label class="col-4" for="magasin">
+                          المخزن
                         </label>
                       </div>
                       <div class="form-row col-12 justify-content-center">
@@ -206,37 +210,84 @@
                                 let selected_prod_index = index
                               "
                               value="{{ selected_prod_index }}"
-                              title="{{ prod.prixDachat }}"
                             >
                               {{ prod.libelle }}
                             </option>
                           </select>
                         </div>
 
-                        <div class="form-group col-2">
+                        <div class="form-group col-4">
+                          <select
+                            class="form-control"
+                            id="magasin"
+                            formControlName="magasin"
+                            (change)="magasinSelectChange($event)"
+                          >
+                            <option
+                              *ngFor="
+                                let magasin of magasins;
+                                let selected_magasin_index = index
+                              "
+                              value="{{ selected_magasin_index }}"
+                            >
+                              {{ magasin.nom }}
+                            </option>
+                          </select>
+                        </div>
+                      </div>
+                      <div
+                        class="row col-12 m-1 text-nowrap justify-content-center"
+                      >
+                        <label class="col-3" for="quantitProduit">
+                          الكمية
+                        </label>
+                        <!-- <label class="col-3" for="prixAchat">
+                          ثمن الشراء
+                        </label> -->
+                        <label class="col-3" for="prixVente">
+                          ثمن البيع
+                        </label>
+                      </div>
+                      <div class="form-row col-12 justify-content-center">
+                        <div class="form-group col-3">
                           <input
                             type="number"
-                            [(ngModel)]="prixLigneCommande"
+                            [(ngModel)]="reset"
                             [ngModelOptions]="{ standalone: true }"
+                            placeholder="{{ quantiteLigneCommande }}"
                             class="form-control"
-                            id="prixProduit"
-                            (focusout)="prixLigneCommandeFocusOut()"
+                            id="quantitProduit"
+                            (focusout)="quantiteLigneCommandeFocusOut($event)"
                           />
                         </div>
 
-                        <div class="form-group col-2">
+                        <!-- <div class="form-group col-3">
                           <input
                             type="number"
-                            [(ngModel)]="quantiteLigneCommande"
+                            [(ngModel)]="prixAchatLigneCommande"
                             [ngModelOptions]="{ standalone: true }"
                             class="form-control"
-                            id="quantitProduit"
-                            (focusout)="quantiteLigneCommandeFocusOut()"
+                            id="prixAchat"
+                            (focusout)="prixAchatLigneCommandeFocusOut()"
+                          />
+                        </div> -->
+
+                        <div class="form-group col-3">
+                          <input
+                            type="number"
+                            [(ngModel)]="prixVenteLigneCommande"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="form-control"
+                            id="prixVente"
+                            (focusout)="prixVenteLigneCommandeFocusOut()"
                           />
                         </div>
                       </div>
+
                       <div class="row col-12 justify-content-center">
-                        <div class="form-group col-sm-6 col-md-4 text-center">
+                        <div
+                          class="form-group col-8 col-sm-6 col-md-4 text-center"
+                        >
                           <button
                             id="btn_commandeTableItem"
                             class="btn btn-warning btn-sm"
@@ -256,7 +307,9 @@
                     >
                       <thead class="text-success">
                         <th>المنتوج</th>
-                        <th>الثمن</th>
+                        <th>المخزن</th>
+                        <!-- <th>ثمن الشراء</th> -->
+                        <th>ثمن البيع</th>
                         <th>الكمية</th>
                         <th>المجموع</th>
                         <th>حذف</th>
@@ -269,10 +322,16 @@
                           "
                         >
                           <td>
-                            {{ commandeTableItem.productName }}
+                            {{ commandeTableItem.produit.libelle }}
                           </td>
                           <td>
-                            {{ commandeTableItem.prix }}
+                            {{ commandeTableItem.magasin.nom }}
+                          </td>
+                          <!-- <td>
+                            {{ commandeTableItem.prixAchat }}
+                          </td> -->
+                          <td>
+                            {{ commandeTableItem.prixVente }}
                           </td>
                           <td>
                             {{ commandeTableItem.quantite }}
@@ -295,7 +354,9 @@
                 </div>
 
                 <!-- payment card -->
-                <div class="card col-12 col-md-4 col-lg-5 col-xl-6 py-2 _payment_card">
+                <div
+                  class="card col-12 col-md-4 col-lg-5 col-xl-6 py-2 _payment_card"
+                >
                   <div
                     class="card-header card-header-danger mr-0 col-md-12 col-sm-12 col-xs-12 p-1"
                     style="max-height: 36px !important"
@@ -319,7 +380,7 @@
                           [value]="montantTotalCmd"
                           class="form-control col-6"
                           id="montantTotalCmd"
-                          disabled
+                          disabled="disabled"
                         />
                       </div>
 
@@ -336,7 +397,7 @@
                           [value]="commandeTable.length"
                           class="form-control col-6"
                           id="nbProducts"
-                          disabled
+                          disabled="disabled"
                         />
                       </div>
                     </div>
@@ -352,7 +413,7 @@
                         <label class="col-6" for="modeReglement">
                           الطريقة
                         </label>
-                        <label class="col-2"></label>
+                        <label class="col-2">حذف</label>
                       </div>
 
                       <div
@@ -365,6 +426,7 @@
                             id="montantReglement"
                             [(ngModel)]="montantLigneReglement"
                             [ngModelOptions]="{ standalone: true }"
+                            (focusout)="montantLigneReglementFocusOut($event)"
                           />
                         </div>
 
@@ -456,7 +518,6 @@
           data-toggle="modal"
           data-target="#ClientSaveModal"
         >
-          Open ClientSaveModal
         </button>
         <!-- Modal Ajouter client -->
         <div

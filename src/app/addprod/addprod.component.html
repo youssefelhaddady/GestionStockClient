@@ -116,16 +116,7 @@
                         <label class="col-4" for="produit">
                           المنتوج
                         </label>
-                        <label class="col-2" for="prixAchat">
-                          ثمن الشراء
-                        </label>
-                        <label class="col-2" for="prixVente">
-                          ثمن البيع
-                        </label>
-                        <label class="col-2" for="quantitProduit">
-                          الكمية
-                        </label>
-                        <label class="col-2" for="magasin">
+                        <label class="col-4" for="magasin">
                           المخزن
                         </label>
                       </div>
@@ -144,9 +135,7 @@
                               "
                               value="{{ selected_categorie_index }}"
                             >
-                              <div>
-                                {{ cat.label }}
-                              </div>
+                              {{ cat.label }}
                             </option>
                           </select>
                         </div>
@@ -170,40 +159,6 @@
                           </select>
                         </div>
 
-                        <div class="form-group col-2">
-                          <input
-                            type="number"
-                            [(ngModel)]="prixAchatLigneCommande"
-                            [ngModelOptions]="{ standalone: true }"
-                            class="form-control"
-                            id="prixAchat"
-                            (focusout)="prixAchatLigneCommandeFocusOut()"
-                          />
-                        </div>
-
-                        <div class="form-group col-2">
-                          <input
-                            type="number"
-                            [(ngModel)]="prixVenteLigneCommande"
-                            [ngModelOptions]="{ standalone: true }"
-                            class="form-control"
-                            id="prixVente"
-                            (focusout)="prixVenteLigneCommandeFocusOut()"
-                          />
-                        </div>
-
-                        <div class="form-group col-2">
-                          <input
-                            type="number"
-                            [(ngModel)]="reset"
-                            [ngModelOptions]="{ standalone: true }"
-                            placeholder="{{ quantiteLigneCommande }}"
-                            class="form-control"
-                            id="quantitProduit"
-                            (focusout)="quantiteLigneCommandeFocusOut($event)"
-                          />
-                        </div>
-
                         <div class="form-group col-4">
                           <select
                             class="form-control"
@@ -223,9 +178,59 @@
                           </select>
                         </div>
                       </div>
+                      <div
+                        class="row col-12 m-1 text-nowrap justify-content-center"
+                      >
+                        <label class="col-3" for="quantitProduit">
+                          الكمية
+                        </label>
+                        <label class="col-3" for="prixAchat">
+                          ثمن الشراء
+                        </label>
+                        <label class="col-3" for="prixVente">
+                          ثمن البيع
+                        </label>
+                      </div>
+                      <div class="form-row col-12 justify-content-center">
+                        <div class="form-group col-3">
+                          <input
+                            type="number"
+                            [(ngModel)]="reset"
+                            [ngModelOptions]="{ standalone: true }"
+                            placeholder="{{ quantiteLigneCommande }}"
+                            class="form-control"
+                            id="quantitProduit"
+                            (focusout)="quantiteLigneCommandeFocusOut($event)"
+                          />
+                        </div>
+
+                        <div class="form-group col-3">
+                          <input
+                            type="number"
+                            [(ngModel)]="prixAchatLigneCommande"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="form-control"
+                            id="prixAchat"
+                            (focusout)="prixAchatLigneCommandeFocusOut()"
+                          />
+                        </div>
+
+                        <div class="form-group col-3">
+                          <input
+                            type="number"
+                            [(ngModel)]="prixVenteLigneCommande"
+                            [ngModelOptions]="{ standalone: true }"
+                            class="form-control"
+                            id="prixVente"
+                            (focusout)="prixVenteLigneCommandeFocusOut()"
+                          />
+                        </div>
+                      </div>
 
                       <div class="row col-12 justify-content-center">
-                        <div class="form-group col-sm-6 col-md-4 text-center">
+                        <div
+                          class="form-group col-8 col-sm-6 col-md-4 text-center"
+                        >
                           <button
                             id="btn_commandeTableItem"
                             class="btn btn-warning btn-sm"
@@ -456,7 +461,6 @@
           data-toggle="modal"
           data-target="#FournisseurSaveModal"
         >
-          Open FournisseurSaveModal
         </button>
         <!-- Modal Ajouter fournisseur -->
         <div
