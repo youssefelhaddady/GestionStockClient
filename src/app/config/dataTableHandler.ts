@@ -44,6 +44,7 @@ export class DataTableHandler {
                 thousands: '.'
             },
             deferRender: true,
+            stateSave: true,
             responsive: false,
         };
     }
