@@ -16,6 +16,33 @@ import { TokenStorageService } from 'app/auth/token.storage.service';
 import { DetailProduit } from 'app/exchange/e_detail_produit';
 import { CommandeTable } from 'app/exchange/e_commande_fournisseur';
 
+import pdfMake from 'pdfmake/build/pdfmake';
+import pdfFonts from 'pdfmake/build/vfs_fonts';
+// import pdfFonts from './../../assets/js/vfs_fonts.js';
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
+pdfMake.fonts = {
+  TimesNewRoman: {
+    normal: 'TimesNewRoman.ttf',
+    bold: 'TimesNewRomanBD.ttf',
+    italics: 'TimesNewRoman.ttf',
+    bolditalics: 'TimesNewRomanBD0.ttf'
+  }
+}
+
+// pdfMake.fonts = {
+//   DroidKufi: {
+//     normal: 'DroidKufi-Regular.ttf',
+//     bold: 'DroidKufi-Regular.ttf',
+//     italics: 'DroidKufi-Regular.ttf',
+//     bolditalics: 'DroidKufi-Regular.ttf'
+//   },
+//   Roboto: {
+//     normal: 'Roboto-Regular.ttf',
+//     bold: 'Roboto-Medium.ttf',
+//     italics: 'Roboto-Italic.ttf',
+//     bolditalics: 'Roboto-Italic.ttf'
+//   }
+// }
 
 @Component({
   selector: 'app-commande',
@@ -291,6 +318,7 @@ export class CommandeComponent implements OnInit {
 
   //  ajouter une ligne de commande (produit/quantité) au tableau commandeTable
   addCommandeLine() {
+    // this.generatePdf(new CommandeClientAddingRequest());
 
     const commandeExistant = this.commandeTable.find(
       // on cherche le produit par son libelle car on peut trouver des produits sans id (les nouveau qui ont un id = 0)
@@ -364,7 +392,15 @@ export class CommandeComponent implements OnInit {
     // }
 
     const reglementTableTemp: ReglementClientE = new ReglementClientE(null, null, this.modeLigneReglement, this.montantLigneReglement);
-    this.reglementTable.push(reglementTableTemp);
+    const reglementExistant = this.reglementTable.find(
+      ligne => (ligne.mode === this.modeLigneReglement)
+    );
+    if (reglementExistant) {
+      const currentReglementLigne = this.reglementTable.indexOf(reglementExistant);
+      this.reglementTable[currentReglementLigne].montant += this.montantLigneReglement;
+    } else {
+      this.reglementTable.push(reglementTableTemp);
+    }
 
     // this.montantTotalReglements += this.montantLigneReglement;
     // this.montantLigneReglement = this.montantTotalCmd - this.montantTotalReglements;
@@ -547,9 +583,9 @@ export class CommandeComponent implements OnInit {
     if (this.quantiteLigneCommande <= 0) {
       this.feedBackService.feedBackCustom('كمية المنتج', 'كمية المنتج أقل من الصفر ؟؟؟', 'error');
       document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
-      } else if (this.quantiteLigneCommande > quantiteOrigine) {
-        this.feedBackService.feedBackCustom('كمية المنتج', 'الكمية المطلوبة تتجاوز الكمية المتاحة في المخزون', 'error');
-        document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
+    } else if (this.quantiteLigneCommande > quantiteOrigine) {
+      this.feedBackService.feedBackCustom('كمية المنتج', 'الكمية المطلوبة تتجاوز الكمية المتاحة في المخزون', 'error');
+      document.getElementById('quantitProduit').className = 'form-control tc-form-control-error';
     } else {
       document.getElementById('quantitProduit').className = 'form-control';
     }
@@ -572,16 +608,29 @@ export class CommandeComponent implements OnInit {
     this.refreshAddLigneReglmEnability(inputMontant);
   }
 
+  getNonIncludedMode(): number {
+    let somme = 0;
+    this.reglementTable.find(element => {
+      if (element.mode === ModeReglementEnum.N_EST_PAS_INCLUS || element.mode === ModeReglementEnum.CREDIT) {
+        somme += element.montant;
+        return false;
+      }
+      return false;
+    });
+    return somme;
+  }
+
 
   genereFacture() {
     const cmd = new CommandeClientAddingRequest();
 
     cmd.dateCmd = new Date();
-    cmd.montantPaye = this.montantTotalCmd;
+    cmd.montantPaye = this.montantTotalCmd - this.getNonIncludedMode();
     cmd.montantTotal = this.montantTotalCmd;
     cmd.livraison = this.fraisLivraison;
     cmd.client = new ClientE();
     cmd.client.idClient = this.clients[this.indiceClientSelectionne].idClient;
+    cmd.client.name = this.clients[this.indiceClientSelectionne].name;
     cmd.reglements = [];
     cmd.lignesCmdClient = [];
 
@@ -593,28 +642,228 @@ export class CommandeComponent implements OnInit {
       cmd.lignesCmdClient.push(ligne);
     });
 
+    this.reglementTable.sort((a, b) => (a.montant > b.montant) ? -1 : 1)
     this.reglementTable.forEach(element => {
       cmd.reglements.push(element);
     });
 
     cmd.idMagasin = this.currentMagasin.idMagasin;
 
-    console.log(cmd)
     this.commandeClientService.add(cmd).subscribe(
       data => {
+        cmd.codeCmd = data.message;
+        this.generatePdf(cmd);
+        console.log(cmd);
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },
       error => {
         this.feedBackService.feedBackCustom('إضافة طلب', 'تعذر تمرير هذا الطلب', 'error');
-      });
+      }
+    );
   }
 
-  /*getProductQuantity(index: number): number {
-    if (this.qts_prods_cat && this.qts_prods_cat.length !== 0) {
-      return this.qts_prods_cat[index];
+  generatePdf(data: any, action = 'download') {
+    const documentDefinition = this.getDocumentDefinition(data);
+
+    switch (action) {
+      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
+      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
+      case 'download': pdfMake.createPdf(documentDefinition).open(); pdfMake.createPdf(documentDefinition).download(data.codeCmd + '.pdf'); break;
+
+      default: pdfMake.createPdf(documentDefinition).open(); break;
     }
 
-    return -1;
-  } */
+  }
+
+  getDocumentDefinition(data: CommandeClientAddingRequest) {
+    return {
+      content: [
+        {
+          columns: [
+            {
+              text: 'فاتورة',
+              width: '*',
+              style: 'title'
+            },
+            {
+              image: 'gdsLogo.png',
+              width: 50,
+              height: 50,
+              margin: [0, 0, 0, 40]
+            }
+          ]
+        },
+        // general commande details
+        {
+          columns: [
+            [
+              this.getClientObject(data)
+            ],
+            [
+              this.getCommandeDetailsObject(data)
+            ]
+          ]
+        },
+        {
+          text: this.getText('المنتجات : '), style: 'header'
+        },
+        this.getProductsObject(),
+        {
+          text: this.getText('طرق الدفع : '), style: 'header'
+        },
+        this.getReglementsObject()
+      ],
+      styles: {
+        title: {
+          bold: true,
+          fontSize: 26,
+          alignment: 'center',
+          margin: [30, 15, 0, 20]
+        },
+        header: {
+          fontSize: 20,
+          bold: true,
+          decoration: 'underline',
+          margin: [0, 40, 0, 10],
+        },
+        tableHeader: {
+          bold: true,
+          fontSize: 16,
+          color: 'black'
+        },
+        tableCell: {
+          fontSize: 13,
+          color: 'black'
+        }
+      },
+      defaultStyle: {
+        font: 'TimesNewRoman',
+        fontSize: 14,
+        alignment: 'right'
+      },
+      info: {
+        title: data.codeCmd,
+        author: 'tcreative',
+        subject: 'commande client',
+        keywords: 'commande client ' + data.client.name,
+      },
+    };
+  }
+
+  getText(text: string): string {
+    if (text === undefined) {
+      return '';
+    }
+
+    const strTab = text.split(' ');
+    return strTab.reverse().join('\t');
+  }
+
+  formatDate(date: Date): string {
+    let str = '';
+
+    str += this.numberToString(date.getDay());
+    str += '/' + this.numberToString(date.getMonth());
+    str += '/' + date.getFullYear();
+    str += '\t' + this.numberToString(date.getHours());
+    str += ':' + this.numberToString(date.getMinutes());
+
+    return str;
+  }
+
+  numberToString(number): string {
+    return number < 10 ? '0' + number : number;
+  }
+
+  getProductsObject() {
+    const lignes = this.commandeTable;
+    return {
+      table: {
+        widths: ['*', '*', '*', '*', 20],
+        body: [
+          [
+            { text: this.getText('السعر الاجمالي'), style: 'tableHeader' },
+            { text: this.getText('سعر الوحدة'), style: 'tableHeader' },
+            { text: this.getText('الكمية'), style: 'tableHeader' },
+            { text: this.getText('اسم المنتج'), style: 'tableHeader' },
+            { text: '', border: [true, false, false, true], }
+          ],
+          ...lignes.map((ligne, index) => {
+            return [
+              { text: ligne.somme, style: 'tableCell' },
+              { text: ligne.prixVente, style: 'tableCell' },
+              { text: ligne.quantite, style: 'tableCell' },
+              { text: this.getText(ligne.produit.libelle), style: 'tableCell' },
+              { text: (index + 1), style: 'tableCell' },
+            ];
+          })
+        ]
+      },
+      margin: [0, 10, 0, 0]
+    };
+  }
+
+  getReglementsObject() {
+    const lignes = this.reglementTable;
+    return {
+      table: {
+        widths: ['*', '*', 30],
+        body: [
+          [
+            {
+              text: this.getText('المبلغ'),
+              style: 'tableHeader',
+            },
+            {
+              text: this.getText('الطريقة'),
+              style: 'tableHeader'
+            },
+            ''
+          ],
+          ...lignes.map((ligne, index) => {
+            return [
+              { text: ligne.montant, style: 'tableCell' },
+              { text: this.getText(this.getModeReglement(ligne.mode)), style: 'tableCell' },
+              { text: (index + 1), style: 'tableCell' },
+            ];
+          })
+        ]
+      },
+      layout: 'lightHorizontalLines',
+      margin: [260, 15, 0, 0]
+    };
+  }
+
+  getClientObject(data: any) {
+    return {
+      table: {
+        width: ['*', '*', '*'],
+        body: [
+          [data.client.idClient, ':', this.getText('رمز الزبون')],
+          [this.getText(data.client.name), ':', this.getText('اسم الزبون')],
+          [this.getText(data.livraison ? 'نعم' : 'لا'), ':', this.getText('تسليم')]
+        ],
+      },
+      layout: 'noBorders',
+      margin: [100, 0, 0, 0]
+    };
+  }
+
+  getCommandeDetailsObject(data: any) {
+    return {
+      table: {
+        width: ['*', '*', '*'],
+        body: [
+          [this.getText(data.codeCmd), ':', this.getText('رمز الطلب')],
+          [this.formatDate(data.dateCmd), ':', this.getText('تاريخ الطلب')],
+          [this.getText(this.currentMagasin.nom), ':', this.getText('المخزن')],
+          [data.montantTotal, ':', this.getText('المبلغ الإجمالي')],
+          [data.montantPaye, ':', this.getText('المبلغ المدفوع')],
+        ],
+      },
+      layout: 'noBorders',
+      margin: [50, 0, 0, 0]
+    };
+  }
 }
