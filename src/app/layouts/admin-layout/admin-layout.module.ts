@@ -63,6 +63,7 @@ import { CommandeClientService } from 'app/shared/services/commande_client.servi
 import { FeedBackService } from 'app/config/feed-back.service';
 import { StatistiquesService } from 'app/shared/services/statistiques.service';
 import { StatClientCountResolver, StatCommandesClientCountResolver } from 'app/shared/resolvers/statistiques.resolver';
+import { BillGeneratorService } from 'app/config/BillGenerator.service';
 
 
 @NgModule({
@@ -119,6 +120,7 @@ import { StatClientCountResolver, StatCommandesClientCountResolver } from 'app/s
     TypeChargeResolver,
 
     FeedBackService,
+    BillGeneratorService,
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: DateFormat }
   ]

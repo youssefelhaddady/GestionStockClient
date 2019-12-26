@@ -15,6 +15,7 @@ import { ReglementClientE } from 'app/exchange/e_reglement_client';
 import { TokenStorageService } from 'app/auth/token.storage.service';
 import { COMPONENT_NAME } from 'app/config/feed-back.service';
 import { DetailProduit } from 'app/exchange/e_detail_produit';
+import { BillGeneratorService } from 'app/config/BillGenerator.service';
 
 @Component({
   selector: 'app-addprod',
@@ -91,7 +92,8 @@ export class AddprodComponent implements OnInit {
     private tokenStorageService: TokenStorageService,
     private commandeFournisseurService: CommandeFournisseurService,
     private fournisseurService: FournisseurService,
-    private feedBackService: FeedBackService) {
+    private feedBackService: FeedBackService,
+    private billGeneratorService: BillGeneratorService) {
   }
 
   ngOnInit() {
@@ -625,6 +627,7 @@ export class AddprodComponent implements OnInit {
     cmd.montantTotal = this.montantTotalCmd;
     cmd.fournisseur = new FournisseurE();
     cmd.fournisseur.idFournisseur = this.fournisseurs[this.indiceFournisseurSelectionne].idFournisseur;
+    cmd.fournisseur.name = this.fournisseurs[this.indiceFournisseurSelectionne].name;
     cmd.reglements = [];
     cmd.lignesCmdFournisseur = [];
 
@@ -636,6 +639,7 @@ export class AddprodComponent implements OnInit {
       cmd.lignesCmdFournisseur.push(ligne);
     });
 
+    this.reglementTable.sort((a, b) => (a.montant > b.montant) ? -1 : 1)
     this.reglementTable.forEach(element => {
       cmd.reglements.push(element);
     });
@@ -645,6 +649,9 @@ export class AddprodComponent implements OnInit {
     // console.log(cmd);
     this.commandeFournisseurService.add(cmd).subscribe(
       data => {
+        cmd.codeCmdF = data.message;
+        this.billGeneratorService.generatePdf('F', cmd, this.commandeTable, this.reglementTable, this.currentMagasin.nom);
+        // console.log(cmd);
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },

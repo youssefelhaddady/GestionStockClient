@@ -15,19 +15,7 @@ import { ReglementClientE } from '../exchange/e_reglement_client';
 import { TokenStorageService } from 'app/auth/token.storage.service';
 import { DetailProduit } from 'app/exchange/e_detail_produit';
 import { CommandeTable } from 'app/exchange/e_commande_fournisseur';
-
-import pdfMake from 'pdfmake/build/pdfmake';
-import pdfFonts from 'pdfmake/build/vfs_fonts';
-// import pdfFonts from './../../assets/js/vfs_fonts.js';
-pdfMake.vfs = pdfFonts.pdfMake.vfs;
-pdfMake.fonts = {
-  TimesNewRoman: {
-    normal: 'TimesNewRoman.ttf',
-    bold: 'TimesNewRomanBD.ttf',
-    italics: 'TimesNewRoman.ttf',
-    bolditalics: 'TimesNewRomanBD0.ttf'
-  }
-}
+import { BillGeneratorService } from 'app/config/BillGenerator.service';
 
 // pdfMake.fonts = {
 //   DroidKufi: {
@@ -119,7 +107,9 @@ export class CommandeComponent implements OnInit {
     private tokenStorageService: TokenStorageService,
     private commandeClientService: CommandeClientService,
     private clientService: ClientService,
-    private feedBackService: FeedBackService) {
+    private feedBackService: FeedBackService,
+    private billGeneratorService: BillGeneratorService
+    ) {
   }
 
   ngOnInit() {
@@ -652,8 +642,8 @@ export class CommandeComponent implements OnInit {
     this.commandeClientService.add(cmd).subscribe(
       data => {
         cmd.codeCmd = data.message;
-        this.generatePdf(cmd);
-        console.log(cmd);
+        this.billGeneratorService.generatePdf('C', cmd, this.commandeTable, this.reglementTable, this.currentMagasin.nom);
+        // console.log(cmd);
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },
@@ -661,209 +651,5 @@ export class CommandeComponent implements OnInit {
         this.feedBackService.feedBackCustom('إضافة طلب', 'تعذر تمرير هذا الطلب', 'error');
       }
     );
-  }
-
-  generatePdf(data: any, action = 'download') {
-    const documentDefinition = this.getDocumentDefinition(data);
-
-    switch (action) {
-      case 'open': pdfMake.createPdf(documentDefinition).open(); break;
-      case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-      case 'download': pdfMake.createPdf(documentDefinition).open(); pdfMake.createPdf(documentDefinition).download(data.codeCmd + '.pdf'); break;
-
-      default: pdfMake.createPdf(documentDefinition).open(); break;
-    }
-
-  }
-
-  getDocumentDefinition(data: CommandeClientAddingRequest) {
-    return {
-      content: [
-        {
-          columns: [
-            {
-              text: 'فاتورة',
-              width: '*',
-              style: 'title'
-            },
-            {
-              image: 'gdsLogo.png',
-              width: 50,
-              height: 50,
-              margin: [0, 0, 0, 40]
-            }
-          ]
-        },
-        // general commande details
-        {
-          columns: [
-            [
-              this.getClientObject(data)
-            ],
-            [
-              this.getCommandeDetailsObject(data)
-            ]
-          ]
-        },
-        {
-          text: this.getText('المنتجات : '), style: 'header'
-        },
-        this.getProductsObject(),
-        {
-          text: this.getText('طرق الدفع : '), style: 'header'
-        },
-        this.getReglementsObject()
-      ],
-      styles: {
-        title: {
-          bold: true,
-          fontSize: 26,
-          alignment: 'center',
-          margin: [30, 15, 0, 20]
-        },
-        header: {
-          fontSize: 20,
-          bold: true,
-          decoration: 'underline',
-          margin: [0, 40, 0, 10],
-        },
-        tableHeader: {
-          bold: true,
-          fontSize: 16,
-          color: 'black'
-        },
-        tableCell: {
-          fontSize: 13,
-          color: 'black'
-        }
-      },
-      defaultStyle: {
-        font: 'TimesNewRoman',
-        fontSize: 14,
-        alignment: 'right'
-      },
-      info: {
-        title: data.codeCmd,
-        author: 'tcreative',
-        subject: 'commande client',
-        keywords: 'commande client ' + data.client.name,
-      },
-    };
-  }
-
-  getText(text: string): string {
-    if (text === undefined) {
-      return '';
-    }
-
-    const strTab = text.split(' ');
-    return strTab.reverse().join('\t');
-  }
-
-  formatDate(date: Date): string {
-    let str = '';
-
-    str += this.numberToString(date.getDay());
-    str += '/' + this.numberToString(date.getMonth());
-    str += '/' + date.getFullYear();
-    str += '\t' + this.numberToString(date.getHours());
-    str += ':' + this.numberToString(date.getMinutes());
-
-    return str;
-  }
-
-  numberToString(number): string {
-    return number < 10 ? '0' + number : number;
-  }
-
-  getProductsObject() {
-    const lignes = this.commandeTable;
-    return {
-      table: {
-        widths: ['*', '*', '*', '*', 20],
-        body: [
-          [
-            { text: this.getText('السعر الاجمالي'), style: 'tableHeader' },
-            { text: this.getText('سعر الوحدة'), style: 'tableHeader' },
-            { text: this.getText('الكمية'), style: 'tableHeader' },
-            { text: this.getText('اسم المنتج'), style: 'tableHeader' },
-            { text: '', border: [true, false, false, true], }
-          ],
-          ...lignes.map((ligne, index) => {
-            return [
-              { text: ligne.somme, style: 'tableCell' },
-              { text: ligne.prixVente, style: 'tableCell' },
-              { text: ligne.quantite, style: 'tableCell' },
-              { text: this.getText(ligne.produit.libelle), style: 'tableCell' },
-              { text: (index + 1), style: 'tableCell' },
-            ];
-          })
-        ]
-      },
-      margin: [0, 10, 0, 0]
-    };
-  }
-
-  getReglementsObject() {
-    const lignes = this.reglementTable;
-    return {
-      table: {
-        widths: ['*', '*', 30],
-        body: [
-          [
-            {
-              text: this.getText('المبلغ'),
-              style: 'tableHeader',
-            },
-            {
-              text: this.getText('الطريقة'),
-              style: 'tableHeader'
-            },
-            ''
-          ],
-          ...lignes.map((ligne, index) => {
-            return [
-              { text: ligne.montant, style: 'tableCell' },
-              { text: this.getText(this.getModeReglement(ligne.mode)), style: 'tableCell' },
-              { text: (index + 1), style: 'tableCell' },
-            ];
-          })
-        ]
-      },
-      layout: 'lightHorizontalLines',
-      margin: [260, 15, 0, 0]
-    };
-  }
-
-  getClientObject(data: any) {
-    return {
-      table: {
-        width: ['*', '*', '*'],
-        body: [
-          [data.client.idClient, ':', this.getText('رمز الزبون')],
-          [this.getText(data.client.name), ':', this.getText('اسم الزبون')],
-          [this.getText(data.livraison ? 'نعم' : 'لا'), ':', this.getText('تسليم')]
-        ],
-      },
-      layout: 'noBorders',
-      margin: [100, 0, 0, 0]
-    };
-  }
-
-  getCommandeDetailsObject(data: any) {
-    return {
-      table: {
-        width: ['*', '*', '*'],
-        body: [
-          [this.getText(data.codeCmd), ':', this.getText('رمز الطلب')],
-          [this.formatDate(data.dateCmd), ':', this.getText('تاريخ الطلب')],
-          [this.getText(this.currentMagasin.nom), ':', this.getText('المخزن')],
-          [data.montantTotal, ':', this.getText('المبلغ الإجمالي')],
-          [data.montantPaye, ':', this.getText('المبلغ المدفوع')],
-        ],
-      },
-      layout: 'noBorders',
-      margin: [50, 0, 0, 0]
-    };
   }
 }
