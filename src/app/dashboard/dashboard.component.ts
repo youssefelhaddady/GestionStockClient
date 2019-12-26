@@ -205,13 +205,18 @@ export class DashboardComponent implements OnInit {
 
   logout() {
     this.tokenStorage.signOut();
-    this.notifySideBarMenu();
-    this.router.navigate(['/login']);
+    // this.notifySideBarMenu();
+    this.reloadPage();
+    // this.router.navigate(['/login']);
     // window.location.reload();
   }
 
   notifySideBarMenu() {
     this.dataService.onLoginSuccess();
+  }
+
+  reloadPage() {
+    window.location.reload();
   }
 
 }

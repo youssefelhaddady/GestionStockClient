@@ -66,7 +66,7 @@ export class SidebarComponent implements OnInit {
     this.roles = this.tokenStorage.getAuthorities();
 
     if (this.roles.length !== 0) {
-      this.roles.every(role => {
+      /*this.roles.every(role => {
         // if (role === 'ROLE_ADMIN') {
         if (role === 'ADMIN') {
           this.makeAllMenuItemsVisible(true);
@@ -77,7 +77,13 @@ export class SidebarComponent implements OnInit {
         }
         this.makeUsersMenuItems();
         return true;
-      });
+      });*/
+      if(this.roles.includes('ADMIN')) {
+        this.makeAllMenuItemsVisible(true);
+        ROUTES[0].visible = false;
+      } else if(this.roles.includes('USER')) {
+        this.makeUsersMenuItems();
+      }
     } else {
       this.makeAllMenuItemsVisible(false);
       ROUTES[0].visible = true;
