@@ -38,3 +38,21 @@ export class StatCommandesClientCountResolver implements Resolve<any> {
         return this.statistiquesService.getCommandesClientCount();
     }
 }
+
+@Injectable()
+export class StatIncomesResolver implements Resolve<any> {
+    constructor(private statistiquesService: StatistiquesService) {}
+
+    resolve() {
+        return this.statistiquesService.getIncomes();
+    }
+}
+
+@Injectable()
+export class StatOutcomesResolver implements Resolve<any> {
+    constructor(private statistiquesService: StatistiquesService) {}
+
+    resolve() {
+        return this.statistiquesService.getOutcomes();
+    }
+}

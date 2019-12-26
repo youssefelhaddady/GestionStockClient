@@ -24,6 +24,9 @@ export class FournisseurComponent extends DataTableHandler implements OnInit, Af
   operation = 'add';
   fournisseurSelectionne: FournisseurE;
 
+  montantDonne = 0;
+  typeDeDonne = 'taken';
+
   constructor(private formBuilder: FormBuilder,
     private fournisseurService: FournisseurService,
     private route: ActivatedRoute,
@@ -119,6 +122,25 @@ export class FournisseurComponent extends DataTableHandler implements OnInit, Af
     );
     fournisseurTemp.credit += fournisseurForm.creditFournisseur;
     fournisseurTemp.credit -= fournisseurForm.pretFournisseur;
+
+    this.fournisseurService.update(fournisseurTemp).subscribe(
+      res => {
+        this.loadFournisseurs();
+        this.feedBackService.feedBackUpdate();
+      },
+      error => {
+        this.feedBackService.feedBackUpdate(OPERATION_TYPE.FAILURE);
+      }
+    );
+  }
+
+  addCredit() {
+    const fournisseurTemp = this.fournisseurSelectionne;
+    if(this.typeDeDonne === 'taken') {
+      fournisseurTemp.credit += this.montantDonne;
+    } else if(this.typeDeDonne === 'given') {
+      fournisseurTemp.credit -= this.montantDonne;
+    }
 
     this.fournisseurService.update(fournisseurTemp).subscribe(
       res => {

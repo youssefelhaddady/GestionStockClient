@@ -1,6 +1,42 @@
 <div class="main-content text-right">
   <div class="container-fluid">
+
+
     <div class="row col-12">
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card card-stats">
+          <div class="card-header card-header-info card-header-icon">
+            <div class="card-icon">
+              <img width="50" height="50" src="./assets/img/incomes.png" alt="">
+            </div>
+            <p class="card-category">المداخيل</p>
+            <h3 class="card-title">
+              <small>مداخيل الشهر الحالي : </small> {{ incomes }} <small>درهم</small>
+            </h3>
+          </div>
+          <div style="height: 40px;"></div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 col-md-6 col-sm-12">
+        <div class="card card-stats">
+          <div class="card-header card-header-primary card-header-icon">
+            <div class="card-icon">
+              <img width="50" height="50" src="./assets/img/outcomes.png" alt="">
+            </div>
+            <p class="card-category">المصاريف</p>
+            <h3 class="card-title">
+              <small>مصاريف الشهر الحالي : </small> {{ outcomes }}
+              <small>درهم</small>
+            </h3>
+          </div>
+          <div style="height: 40px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row col-12">
+
       <div class="col-lg-3 col-md-6 col-sm-6">
         <div class="card card-stats">
           <div class="card-header card-header-info card-header-icon">
@@ -36,9 +72,7 @@
           <div class="card-footer">
             <div class="stats">
               <i class="material-icons text-success">arrow_forward</i>
-              <a [routerLink]="['/fournisseur']" class="text-success"
-                >لائحة المزودين</a
-              >
+              <a [routerLink]="['/fournisseur']" class="text-success">لائحة المزودين</a>
             </div>
           </div>
         </div>
@@ -59,9 +93,7 @@
           <div class="card-footer">
             <div class="stats">
               <i class="material-icons text-primary">arrow_forward</i>
-              <a [routerLink]="['/employe']" class="text-primary"
-                >لائحة العمال</a
-              >
+              <a [routerLink]="['/employe']" class="text-primary">لائحة العمال</a>
             </div>
           </div>
         </div>
@@ -82,9 +114,7 @@
           <div class="card-footer">
             <div class="stats">
               <i class="material-icons text-danger">arrow_forward</i>
-              <a [routerLink]="['/stock']" class="text-danger"
-                >لائحة المنتجات</a
-              >
+              <a [routerLink]="['/stock']" class="text-danger">لائحة المنتجات</a>
             </div>
           </div>
         </div>
@@ -113,9 +143,7 @@
           <div class="card-footer">
             <div class="stats">
               <i class="material-icons text-danger">arrow_forward</i>
-              <a [routerLink]="['/commande']" class="text-danger"
-                >طلبات الزبائن</a
-              >
+              <a [routerLink]="['/commande']" class="text-danger">طلبات الزبائن</a>
             </div>
           </div>
         </div>

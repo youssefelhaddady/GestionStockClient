@@ -10,27 +10,16 @@
             <div class="row col-12 mb-1">
               <div class="col-md-4 col-sm-6 col-xs-12 order-sm-2">
                 <mat-form-field class="example-full-width text-center">
-                  <input
-                    matInput
-                    value="{{
+                  <input matInput value="{{
                       currentDateTime | date: 'HH:mm:ss \t\t\t dd/MM/yyyy'
-                    }}"
-                    disabled
-                  />
+                    }}" disabled />
                 </mat-form-field>
               </div>
               <div class="col-md-8 col-sm-6 col-xs-12 order-sm-1">
                 <!-- Button Ajouter modal -->
-                <button
-                  type="button"
-                  class="btn btn-info"
-                  data-toggle="modal"
-                  data-target="#ClientSaveModal"
-                  (click)="operation = 'add'; initClient()"
-                >
-                  <span style="font-size: 10px;"
-                    ><i class="fas fa-plus"></i
-                  ></span>
+                <button type="button" class="btn btn-info" data-toggle="modal" data-target="#ClientSaveModal"
+                  (click)="operation = 'add'; initClient()">
+                  <span style="font-size: 10px;"><i class="fas fa-plus"></i></span>
                   إضافة زبون
                 </button>
               </div>
@@ -39,12 +28,8 @@
 
             <!-- client datatable -->
             <div class="col-md-10 col-xs-12 tc-datatable table-responsive">
-              <table
-                datatable
-                [dtOptions]="dtOptions"
-                [dtTrigger]="dtTrigger"
-                class="display nowrap text-center col-12"
-              >
+              <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                class="display nowrap text-center col-12">
                 <thead class=" text-info">
                   <tr>
                     <th>رقم البطاقة الوطنية</th>
@@ -77,29 +62,34 @@
                       {{ getPretClient(client.credit) }}
                     </td>
                     <td>
-                      <button
-                        type="submit"
-                        class="tc-btn tc-btn-dark-info tc-tooltip ml-2"
-                        data-toggle="modal"
-                        data-target="#ClientSaveModal"
-                        *ngIf="client.name !== 'غير معروف'"
-                        (click)="
+                      <button type="submit" class="tc-btn tc-btn-success tc-tooltip ml-2" data-toggle="modal"
+                        data-target="#DonnerCreditModal" *ngIf="client.name !== 'غير معروف'" (click)="
+                        typeDeDonne = 'taken'; clientSelectionne = client
+                        ">
+                        <span class="tc-tooltip-content">استلام مبلغ</span>
+                        <span><img width="22" height="22" src="./assets/img/save_money.png" alt=""></span>
+                      </button>
+
+                      <button type="submit" class="tc-btn tc-btn-warning tc-tooltip ml-2" data-toggle="modal"
+                        data-target="#DonnerCreditModal" *ngIf="client.name !== 'غير معروف'" (click)="
+                        typeDeDonne = 'given'; clientSelectionne = client
+                        ">
+                        <span class="tc-tooltip-content">تسليم مبلغ</span>
+                        <span><img width="22" height="22" src="./assets/img/give_money.png" alt=""></span>
+                      </button>
+
+                      <button type="submit" class="tc-btn tc-btn-dark-info tc-tooltip ml-2" data-toggle="modal"
+                        data-target="#ClientSaveModal" *ngIf="client.name !== 'غير معروف'" (click)="
                           operation = 'update'; clientSelectionne = client
-                        "
-                      >
+                        ">
                         <span class="tc-tooltip-content">تغيير المعلومات</span>
                         <span><i class="far fa-edit"></i></span>
                       </button>
-                      <button
-                        type="submit"
-                        class="tc-btn tc-btn-danger tc-tooltip ml-2"
-                        data-toggle="modal"
-                        data-target="#ClientDeleteModal"
-                        *ngIf="client.name !== 'غير معروف'"
-                        (click)="
+
+                      <button type="submit" class="tc-btn tc-btn-danger tc-tooltip ml-2" data-toggle="modal"
+                        data-target="#ClientDeleteModal" *ngIf="client.name !== 'غير معروف'" (click)="
                           operation = 'remove'; clientSelectionne = client
-                        "
-                      >
+                        ">
                         <span class="tc-tooltip-content"> حذف </span>
                         <span><i class="fas fa-trash-alt"></i></span>
                       </button>
@@ -111,40 +101,18 @@
             <!-- Datatable end -->
 
             <!-- Modal Ajouter/Modifier employe -->
-            <div
-              class="modal fade"
-              id="ClientSaveModal"
-              tabindex="-1"
-              role="dialog"
-              aria-labelledby="ClientSaveModalTitle"
-              aria-hidden="true"
-            >
-              <div
-                class="modal-dialog modal-lg modal-dialog-centered"
-                role="document"
-              >
+            <div class="modal fade" id="ClientSaveModal" tabindex="-1" role="dialog"
+              aria-labelledby="ClientSaveModalTitle" aria-hidden="true">
+              <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                 <div class="modal-content">
                   <div class="modal-header row">
-                    <h5
-                      *ngIf="operation == 'add'"
-                      class="modal-title col-11 text-right"
-                      id="ClientModalLongTitle"
-                    >
+                    <h5 *ngIf="operation == 'add'" class="modal-title col-11 text-right" id="ClientModalLongTitle">
                       إضافة زبون
                     </h5>
-                    <h5
-                      *ngIf="operation == 'update'"
-                      class="modal-title col-11 text-right"
-                      id="ClientModalLongTitle"
-                    >
+                    <h5 *ngIf="operation == 'update'" class="modal-title col-11 text-right" id="ClientModalLongTitle">
                       تغيير معلومات الزبون
                     </h5>
-                    <button
-                      type="button"
-                      class="close col-1"
-                      data-dismiss="modal"
-                      aria-label="Close"
-                    >
+                    <button type="button" class="close col-1" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
@@ -154,237 +122,127 @@
                       <div class="modal-body text-right">
                         <div class="row">
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="cin"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >رقم البطاقة الوطنية :
+                            <label for="cin" class="control-label col-md-4 col-sm-12 text-nowrap">رقم البطاقة الوطنية :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="cin"
-                              formControlName="cin"
-                              [(ngModel)]="clientSelectionne.cin"
-                            />
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="cin" formControlName="cin"
+                              [(ngModel)]="clientSelectionne.cin" />
                           </div>
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="name"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                            >
+                            <label for="name" class="control-label col-md-4 col-sm-12 text-nowrap">
                               الإسم الكامل :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="name"
-                              formControlName="name"
-                              [(ngModel)]="clientSelectionne.name"
-                              [class.is-invalid]="name.invalid && name.touched"
-                            />
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="name" formControlName="name"
+                              [(ngModel)]="clientSelectionne.name" [class.is-invalid]="name.invalid && name.touched" />
                           </div>
                         </div>
                         <div class="row">
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="rip"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >رقم الحساب البنكي :
+                            <label for="rip" class="control-label col-md-4 col-sm-12 text-nowrap">رقم الحساب البنكي :
                             </label>
-                            <input
-                              type="number"
-                              class="form-control col-md-8 col-sm-12"
-                              id="rip"
-                              min="0"
-                              formControlName="rip"
-                              [(ngModel)]="clientSelectionne.rip"
-                              [class.is-invalid]="rip.invalid && rip.touched"
-                            />
+                            <input type="number" class="form-control col-md-8 col-sm-12" id="rip" min="0"
+                              formControlName="rip" [(ngModel)]="clientSelectionne.rip"
+                              [class.is-invalid]="rip.invalid && rip.touched" />
                           </div>
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="raison_sociale"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >الاسم التجاري :
+                            <label for="raison_sociale" class="control-label col-md-4 col-sm-12 text-nowrap">الاسم
+                              التجاري :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="raison_sociale"
-                              min="0"
-                              formControlName="raison_sociale"
-                              [(ngModel)]="clientSelectionne.raison_sociale"
-                            />
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="raison_sociale" min="0"
+                              formControlName="raison_sociale" [(ngModel)]="clientSelectionne.raison_sociale" />
                           </div>
                         </div>
                         <div class="row">
                           <div class="form-group col-12">
-                            <label
-                              for="type"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >نوع التاجر :
+                            <label for="type" class="control-label col-md-4 col-sm-12 text-nowrap">نوع التاجر :
                             </label>
-                            <mat-radio-group
-                              class="col-md-8 col-sm-12"
-                              id="type"
-                              formControlName="type"
-                              [(ngModel)]="clientSelectionne.type"
-                            >
-                              <mat-radio-button value="NORMAL" class="ml-3"
-                                >عادي</mat-radio-button
-                              >
-                              <mat-radio-button value="GROSSISTE" class="ml-3"
-                                >تاجر بالجملة</mat-radio-button
-                              >
-                              <mat-radio-button value="SEMI_GROSSISTE" class=""
-                                >تاجر بنصف الجملة</mat-radio-button
-                              >
+                            <mat-radio-group class="col-md-8 col-sm-12" id="type" formControlName="type"
+                              [(ngModel)]="clientSelectionne.type">
+                              <mat-radio-button value="NORMAL" class="ml-3">عادي</mat-radio-button>
+                              <mat-radio-button value="GROSSISTE" class="ml-3">تاجر بالجملة</mat-radio-button>
+                              <mat-radio-button value="SEMI_GROSSISTE" class="">تاجر بنصف الجملة</mat-radio-button>
                             </mat-radio-group>
                           </div>
                         </div>
 
                         <div class="row">
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="creditClient"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              title="يدفع"
-                              >سلف :
+                            <label for="creditClient" class="control-label col-md-4 col-sm-12 text-nowrap"
+                              title="يدفع">سلف :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="creditClient"
-                              min="0"
-                              maxlength="10"
-                              minlenght="10"
-                              formControlName="creditClient"
-                              [ngModel]="
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="creditClient" min="0"
+                              maxlength="10" minlenght="10" formControlName="creditClient" [ngModel]="
                                 getCreditClient(clientSelectionne.credit)
-                              "
-                              [class.is-invalid]="
+                              " [class.is-invalid]="
                                 creditClient.invalid && creditClient.touched
-                              "
-                            />
+                              " />
                           </div>
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="pretClient"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              title="يستلم"
-                              >قرض :
+                            <label for="pretClient" class="control-label col-md-4 col-sm-12 text-nowrap"
+                              title="يستلم">قرض :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="pretClient"
-                              min="0"
-                              maxlength="10"
-                              minlenght="10"
-                              formControlName="pretClient"
-                              [ngModel]="
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="pretClient" min="0"
+                              maxlength="10" minlenght="10" formControlName="pretClient" [ngModel]="
                                 getPretClient(clientSelectionne.credit)
-                              "
-                              [class.is-invalid]="
+                              " [class.is-invalid]="
                                 pretClient.invalid && pretClient.touched
-                              "
-                            />
+                              " />
                           </div>
                         </div>
 
                         <div class="row">
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="phone"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >رقم الهاتف :
+                            <label for="phone" class="control-label col-md-4 col-sm-12 text-nowrap">رقم الهاتف :
                             </label>
-                            <input
-                              type="text"
-                              class="form-control col-md-8 col-sm-12"
-                              id="phone"
-                              min="0"
-                              maxlength="10"
-                              minlenght="10"
-                              formControlName="phone"
-                              [(ngModel)]="clientSelectionne.phone"
+                            <input type="text" class="form-control col-md-8 col-sm-12" id="phone" min="0" maxlength="10"
+                              minlenght="10" formControlName="phone" [(ngModel)]="clientSelectionne.phone"
                               [class.is-invalid]="
                                 phone.invalid && phone.touched
-                              "
-                            />
+                              " />
                           </div>
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="address"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >العنوان :
+                            <label for="address" class="control-label col-md-4 col-sm-12 text-nowrap">العنوان :
                             </label>
-                            <textarea
-                              class="form-control col-md-8 col-sm-12"
-                              id="address"
-                              formControlName="address"
-                              [(ngModel)]="clientSelectionne.address"
-                            ></textarea>
+                            <textarea class="form-control col-md-8 col-sm-12" id="address" formControlName="address"
+                              [(ngModel)]="clientSelectionne.address"></textarea>
                           </div>
                         </div>
                         <div class="row">
                           <div class="form-group col-lg-6 col-sm-12">
-                            <label
-                              for="email"
-                              class="control-label col-md-4 col-sm-12 text-nowrap"
-                              >البريد الالكتروني :
+                            <label for="email" class="control-label col-md-4 col-sm-12 text-nowrap">البريد الالكتروني :
                             </label>
-                            <input
-                              type="email"
-                              class="form-control col-md-8 col-sm-12"
-                              id="email"
-                              formControlName="email"
-                              [(ngModel)]="clientSelectionne.email"
-                              [class.is-invalid]="
+                            <input type="email" class="form-control col-md-8 col-sm-12" id="email"
+                              formControlName="email" [(ngModel)]="clientSelectionne.email" [class.is-invalid]="
                                 email.invalid && email.touched
-                              "
-                            />
+                              " />
                           </div>
                         </div>
 
                         <div class="row">
                           <div class="mt-5 mb-1 col-md-6 col-sm-12">
-                            <ul
-                              class="text-danger col-12"
-                              *ngIf="
+                            <ul class="text-danger col-12" *ngIf="
                                 name.invalid && (name.touched || name.dirty)
-                              "
-                            >
+                              ">
                               <li>
                                 يجب ادخال اسم العامل
                               </li>
                             </ul>
-                            <ul
-                              class="text-danger col-12"
-                              *ngIf="rip.invalid && (rip.touched || rip.dirty)"
-                            >
+                            <ul class="text-danger col-12" *ngIf="rip.invalid && (rip.touched || rip.dirty)">
                               <li>
                                 رقم الحساب البنكي يجب أن يكون موجباً
                               </li>
                             </ul>
                           </div>
                           <div class="mt-md-5 mb-1 col-md-6 col-sm-12">
-                            <ul
-                              class="text-danger col-12"
-                              *ngIf="
+                            <ul class="text-danger col-12" *ngIf="
                                 phone.invalid && (phone.touched || phone.dirty)
-                              "
-                            >
+                              ">
                               <li>
                                 رقم الهاتف يحتوي عشرة أرقام
                               </li>
                             </ul>
-                            <ul
-                              class="text-danger col-12"
-                              *ngIf="
+                            <ul class="text-danger col-12" *ngIf="
                                 email.invalid && (email.touched || email.dirty)
-                              "
-                            >
+                              ">
                               <li>
                                 أدخل بريد الكتروني صالح
                               </li>
@@ -394,26 +252,17 @@
                       </div>
                       <br /><br /><br />
                       <div class="modal-footer">
-                        <button
-                          type="button"
-                          class="btn btn-outline-danger ml-3"
-                          data-dismiss="modal"
-                        >
+                        <button type="button" class="btn btn-outline-danger ml-3" data-dismiss="modal">
                           إلغاء
                         </button>
-                        <button
-                          type="submit"
-                          class="btn btn-success"
-                          data-dismiss="modal"
-                          [disabled]="clientForm.pristine || clientForm.invalid"
-                          (click)="
+                        <button type="submit" class="btn btn-success" data-dismiss="modal"
+                          [disabled]="clientForm.pristine || clientForm.invalid" (click)="
                             operation == 'add'
                               ? addClient()
                               : operation == 'update'
                               ? updateClient()
                               : operationError()
-                          "
-                        >
+                          ">
                           تأكيد
                         </button>
                       </div>
@@ -425,29 +274,15 @@
             <!---Modal end-->
 
             <!-- Client Delete Modal -->
-            <div
-              class="modal text-right fade"
-              id="ClientDeleteModal"
-              tabindex="-1"
-              role="dialog"
-              aria-labelledby="ClientDeleteModalTitle"
-              aria-hidden="true"
-            >
+            <div class="modal text-right fade" id="ClientDeleteModal" tabindex="-1" role="dialog"
+              aria-labelledby="ClientDeleteModalTitle" aria-hidden="true">
               <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5
-                      class="modal-title col-11 text-right"
-                      id="ClientModalLongTitle"
-                    >
+                    <h5 class="modal-title col-11 text-right" id="ClientModalLongTitle">
                       حذف الزبون
                     </h5>
-                    <button
-                      type="button"
-                      class="close col-1"
-                      data-dismiss="modal"
-                      aria-label="Close"
-                    >
+                    <button type="button" class="close col-1" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
@@ -459,19 +294,10 @@
                   </div>
                   <br />
                   <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-outline-success ml-3"
-                      data-dismiss="modal"
-                    >
+                    <button type="button" class="btn btn-outline-success ml-3" data-dismiss="modal">
                       إلغاء
                     </button>
-                    <button
-                      type="button"
-                      class="btn btn-danger"
-                      (click)="deleteClient()"
-                      data-dismiss="modal"
-                    >
+                    <button type="button" class="btn btn-danger" (click)="deleteClient()" data-dismiss="modal">
                       تأكيد
                     </button>
                   </div>
@@ -479,6 +305,74 @@
               </div>
             </div>
             <!---Modal end-->
+
+
+            <!-- Modal Credit -->
+            <div class="modal text-right fade" id="DonnerCreditModal" tabindex="-1" role="dialog"
+              aria-labelledby="ModalDonnerCreditTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header row">
+                    <h5 class="modal-title col-11 text-right" id="exampleModalLongTitle" *ngIf="typeDeDonne === 'given'">
+                      تسليم مبلغ
+                    </h5>
+                    <h5 class="modal-title col-11 text-right" id="exampleModalLongTitle" *ngIf="typeDeDonne === 'taken'">
+                      استلام مبلغ
+                    </h5>
+                    <button type="button" class="close col-1" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <br /><br />
+                  <div class="modal-body container">
+                    <div class="form-group row col-12">
+                      <input type="number" class="form-control col-6" id="montantDonne" min="0"
+                        [(ngModel)]="montantDonne" />
+                      <label for="montantDonne" class="control-label text-nowrap text-right col-6">
+                        درهم
+                      </label>
+                    </div>
+                    <div class="row">
+                      <div class="mt-2 col-12">
+                        <ul class="text-danger col-12">
+                          <li *ngIf="montantDonne === null">
+                            يجب ادخال المبلغ
+                          </li>
+                          <li *ngIf="montantDonne <= 0">
+                            أدخل مبلغ أكبر من 0
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                    <div class="row col-12">
+                      <h3 class="text-danger mr-1 text-right"  *ngIf="typeDeDonne === 'taken'">
+                        تأكيد استلام المبلغ !!
+                      </h3>
+                      <h3 class="text-danger mr-1 text-right"  *ngIf="typeDeDonne === 'given'">
+                        تأكيد تسليم المبلغ !!
+                      </h3>
+                    </div>
+                    <div class="row col-12 justify-content-center">
+                      <h4 class="text-warning mb-2 text-center">
+                        {{ clientSelectionne.name }}
+                      </h4>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger ml-3" data-dismiss="modal">
+                      إلغاء
+                    </button>
+                    <button type="button" data-dismiss="modal" class="btn btn-success" (click)="addCredit()"
+                      [disabled]="montantDonne === null || montantDonne <= 0">
+                      تأكيد
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!---Modal eend-->
+
           </div>
         </div>
       </div>

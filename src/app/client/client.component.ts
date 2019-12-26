@@ -23,6 +23,9 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
   operation = 'add';
   clientSelectionne: ClientE;
 
+  montantDonne = 0;
+  typeDeDonne = 'taken';
+
   constructor(private formBuilder: FormBuilder,
     private clientService: ClientService,
     private route: ActivatedRoute,
@@ -131,6 +134,25 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
       }
     );
   }
+  
+  addCredit() {
+    const clientTemp = this.clientSelectionne;
+    if(this.typeDeDonne === 'taken') {
+      clientTemp.credit += this.montantDonne;
+    } else if(this.typeDeDonne === 'given') {
+      clientTemp.credit -= this.montantDonne;
+    }
+
+    this.clientService.update(clientTemp).subscribe(
+      res => {
+        this.loadClients();
+        this.feedBackService.feedBackUpdate();
+      },
+      error => {
+        this.feedBackService.feedBackUpdate(OPERATION_TYPE.FAILURE);
+      }
+    );
+  }
 
   deleteClient() {
     this.clientService.deleteControlled(this.clientSelectionne.idClient, DELETE_DECISION.DELETE).subscribe(
@@ -172,8 +194,5 @@ export class ClientComponent extends DataTableHandler implements OnInit, AfterVi
     return (credit >= 0) ? 0 : Math.abs(credit);
   }
 
-  /*itemDoubleClicked(event) {
-    console.log(event);
-    alert(event);
-  }*/
+  
 }

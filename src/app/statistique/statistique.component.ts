@@ -11,6 +11,9 @@ import { Chart } from 'chart.js';
 })
 export class StatistiqueComponent implements OnInit {
 
+  incomes = 0;
+  outcomes = 0;
+
   nombreClients = 0;
   nombreFournisseurs = 0;
   nombreOuvriers = 0;
@@ -27,17 +30,28 @@ export class StatistiqueComponent implements OnInit {
   ngOnInit() {
     this.verifyAccessPrivs.verify();
 
+    this.incomes = this.route.snapshot.data.incomes;
+    this.outcomes = this.route.snapshot.data.outcomes;
+
+    console.log(this.incomes);
+    console.log(this.outcomes);
+
     this.nombreClients = this.route.snapshot.data.nombreClients;
     this.nombreFournisseurs = this.route.snapshot.data.nombreFournisseurs;
     this.nombreOuvriers = this.route.snapshot.data.nombreOuvriers;
 
     this.nombreCommandesClientParMois = this.route.snapshot.data.nombreCommandesClientParMois;
+
     this.nombreCommandesClientParMois.forEach(element => {
       this.moisLabels.push(element.month + '/' + element.year);
       this.nombreCommandesClient.push(element.count);
     });
 
     // Line chart
+    this.initLineChart();
+  }
+
+  initLineChart() {
     this.LineChart = new Chart('linechart', {
       type: 'line',
       data: {
@@ -98,6 +112,7 @@ export class StatistiqueComponent implements OnInit {
     }
     return;
   }
+
   getCommandeClientWithMinCountMsg(): string {
     const minCmd = this.getCommandeClientWithMinMaxCount()[0];
     if (minCmd) {

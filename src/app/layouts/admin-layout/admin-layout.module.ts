@@ -1,5 +1,5 @@
 import { AccessDeniedComponent } from './../../components/access-denied/access-denied.component';
-import { StatFournisseurCountResolver, StatOuvrierCountResolver } from './../../shared/resolvers/statistiques.resolver';
+import { StatFournisseurCountResolver, StatOuvrierCountResolver, StatIncomesResolver, StatOutcomesResolver } from './../../shared/resolvers/statistiques.resolver';
 import { CommandeFournisseurService } from './../../shared/services/commande_fournisseur.service';
 import { DataTablesModule } from 'angular-datatables';
 import { ChargeResolver } from './../../shared/resolvers/charge.resolver';
@@ -116,7 +116,7 @@ import { BillGeneratorService } from 'app/config/BillGenerator.service';
     OuvrierService, OuvrierResolver,
     ProduitService,
     StatistiquesService, StatClientCountResolver, StatFournisseurCountResolver, StatOuvrierCountResolver,
-    StatCommandesClientCountResolver,
+    StatCommandesClientCountResolver, StatIncomesResolver, StatOutcomesResolver,
     TypeChargeResolver,
 
     FeedBackService,

@@ -28,6 +28,14 @@ export class StatistiquesService {
     return this.http.get(API_URLS.STATISTIQUES_URL + '/commande_client/count');
   }
 
+  getIncomes(): Observable<any> {
+    return this.http.get(API_URLS.STATISTIQUES_URL + '/incomes');
+  }
+
+  getOutcomes(): Observable<any> {
+    return this.http.get(API_URLS.STATISTIQUES_URL + '/outcomes');
+  }
+
   // getQtsForFirstCategory(): Observable<any> {
   //   const idMagasin = this.tokenStorageService.getMagasinId();
 
