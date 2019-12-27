@@ -643,7 +643,6 @@ export class CommandeComponent implements OnInit {
       data => {
         cmd.codeCmd = data.message;
         this.billGeneratorService.generatePdf('C', cmd, this.commandeTable, this.reglementTable, this.currentMagasin.nom);
-        // console.log(cmd);
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },

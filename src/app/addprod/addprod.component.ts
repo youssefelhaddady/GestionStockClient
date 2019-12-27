@@ -49,9 +49,6 @@ export class AddprodComponent implements OnInit {
   prixAchatLigneCommande = 0; // prix d'achat du produit sélectionné - attribut du formularire de selectionnement de produit
   prixVenteLigneCommande = 0; // prix de vente du produit sélectionné - attribut du formularire de selectionnement de produit
   quantiteLigneCommande = 0; // quantité du produit sélectionné - attribut du formularire de selectionnement de produit
-  /*
-  qts_prods_cat: number[] = [];   // liste contenant les quantites des produits de la categorie sélectionnée
-  */
 
   /* paiement */
   reglementTable: ReglementClientE[] = []; // le tableau général des méthodes de paiement/montant de la commande courrante
@@ -66,7 +63,7 @@ export class AddprodComponent implements OnInit {
 
   isNewCategorie = false;
 
-  addLigneCmdEnabled = false; // activer le bouton ajouter ligne de commande
+  addLigneCmdEnabled = false; // désactiver le bouton ajouter ligne de commande
   addLigneReglmEnabled = true; // activer le bouton ajouter ligne de reglement
   confirmEnabled = false; // désactiver le bouton confirmer commande
 
@@ -111,7 +108,7 @@ export class AddprodComponent implements OnInit {
     }
 
     // init atts
-    if (this.produits[this.indiceProduitSelectionne]) {
+    if (this.produits[this.indiceProduitSelectionne] !== undefined && this.produits[this.indiceProduitSelectionne]) {
       this.setValuesFromDetails();
     }
 
@@ -206,7 +203,7 @@ export class AddprodComponent implements OnInit {
     this.reglementTable = [];
 
     this.addLigneCmdEnabled = false;
-    this.addLigneReglmEnabled = false;
+    this.addLigneReglmEnabled = true;
     this.confirmEnabled = false;
   }
 
@@ -399,7 +396,15 @@ export class AddprodComponent implements OnInit {
     // }
 
     const reglementTableTemp: ReglementClientE = new ReglementClientE(0, null, this.modeLigneReglement, this.montantLigneReglement);
-    this.reglementTable.push(reglementTableTemp);
+    const reglementExistant = this.reglementTable.find(
+      ligne => (ligne.mode === this.modeLigneReglement)
+    );
+    if (reglementExistant) {
+      const currentReglementLigne = this.reglementTable.indexOf(reglementExistant);
+      this.reglementTable[currentReglementLigne].montant += this.montantLigneReglement;
+    } else {
+      this.reglementTable.push(reglementTableTemp);
+    }
 
     // this.montantTotalReglements += this.montantLigneReglement;
     // this.montantLigneReglement = this.montantTotalCmd - this.montantTotalReglements;
@@ -646,12 +651,10 @@ export class AddprodComponent implements OnInit {
 
     cmd.idMagasin = this.currentMagasin.idMagasin;
 
-    // console.log(cmd);
     this.commandeFournisseurService.add(cmd).subscribe(
       data => {
         cmd.codeCmdF = data.message;
         this.billGeneratorService.generatePdf('F', cmd, this.commandeTable, this.reglementTable, this.currentMagasin.nom);
-        // console.log(cmd);
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },

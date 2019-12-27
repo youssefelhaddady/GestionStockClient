@@ -56,3 +56,12 @@ export class StatOutcomesResolver implements Resolve<any> {
         return this.statistiquesService.getOutcomes();
     }
 }
+
+@Injectable()
+export class StatChargesOutcomesResolver implements Resolve<any> {
+    constructor(private statistiquesService: StatistiquesService) {}
+
+    resolve() {
+        return this.statistiquesService.getChargesOutcomes();
+    }
+}

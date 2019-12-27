@@ -13,6 +13,7 @@ export class StatistiqueComponent implements OnInit {
 
   incomes = 0;
   outcomes = 0;
+  chargesOutcomes = 0;
 
   nombreClients = 0;
   nombreFournisseurs = 0;
@@ -32,9 +33,10 @@ export class StatistiqueComponent implements OnInit {
 
     this.incomes = this.route.snapshot.data.incomes;
     this.outcomes = this.route.snapshot.data.outcomes;
+    this.chargesOutcomes = this.route.snapshot.data.chargesOutcomes;
 
-    console.log(this.incomes);
-    console.log(this.outcomes);
+    // console.log(this.incomes);
+    // console.log(this.outcomes);
 
     this.nombreClients = this.route.snapshot.data.nombreClients;
     this.nombreFournisseurs = this.route.snapshot.data.nombreFournisseurs;

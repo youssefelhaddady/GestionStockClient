@@ -53,9 +53,7 @@ export class ChargeComponent extends DataTableHandler implements OnInit {
 
     this.initDataTable();
     this.initCharge();
-    // data.series = data.series.filter((item: any) =>
-    //   item.date.getTime() >= fromDate.getTime() && item.date.getTime() <= toDate.getTime()
-    // );
+    
     this.chargesFitched = this.route.snapshot.data.charges;
     this.currentMonth();
     this.typesCharge = this.route.snapshot.data.typesCharge;
@@ -199,14 +197,12 @@ export class ChargeComponent extends DataTableHandler implements OnInit {
   }
 
   addTypeCharge() {
-    const typeDeCharge = new TypeChargeE(0, this.typeChargeForm.value.name);
+    const typeDeChargeTemp = new TypeChargeE(0, this.typeChargeForm.value.name);
 
-    this.chargeService.addChargeType(typeDeCharge).subscribe(
+    this.chargeService.addChargeType(typeDeChargeTemp).subscribe(
       res => {
         this.loadTypesCharge();
         this.feedBackService.feedBackCustom('إضافة معلومات', ' إضافة اسم التكلفة بنجاح', 'success');
-        const elem = this.typesCharge.length - 1;
-        this.typeDeChargeSelectionne = this.typesCharge[elem];
       },
       error => {
         this.feedBackService.feedBackCustom('إضافة معلومات', 'تعذر اضافة اسم التكلفة', 'error');

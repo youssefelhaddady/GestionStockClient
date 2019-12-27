@@ -36,6 +36,10 @@ export class StatistiquesService {
     return this.http.get(API_URLS.STATISTIQUES_URL + '/outcomes');
   }
 
+  getChargesOutcomes(): Observable<any> {
+    return this.http.get(API_URLS.STATISTIQUES_URL + '/charges/outcomes');
+  }
+
   // getQtsForFirstCategory(): Observable<any> {
   //   const idMagasin = this.tokenStorageService.getMagasinId();
 

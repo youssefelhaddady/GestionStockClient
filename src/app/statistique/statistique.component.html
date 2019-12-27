@@ -14,7 +14,7 @@
               <small>مداخيل الشهر الحالي : </small> {{ incomes }} <small>درهم</small>
             </h3>
           </div>
-          <div style="height: 40px;"></div>
+          <div style="height: 63px;"></div>
         </div>
       </div>
 
@@ -25,12 +25,20 @@
               <img width="50" height="50" src="./assets/img/outcomes.png" alt="">
             </div>
             <p class="card-category">المصاريف</p>
-            <h3 class="card-title">
+            <h4 class="card-title">
               <small>مصاريف الشهر الحالي : </small> {{ outcomes }}
               <small>درهم</small>
-            </h3>
+            </h4>
+            <h4 class="card-title">
+              <small>تكاليف أخرى : </small> {{ chargesOutcomes }}
+              <small>درهم</small>
+            </h4>
+            <h4 class="card-title">
+              <small>المجموع : </small> {{ outcomes + chargesOutcomes }}
+              <small>درهم</small>
+            </h4>
           </div>
-          <div style="height: 40px;"></div>
+          <div style="height: 20px;"></div>
         </div>
       </div>
     </div>

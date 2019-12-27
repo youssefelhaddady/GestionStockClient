@@ -1,5 +1,5 @@
 import { AccessDeniedComponent } from './../../components/access-denied/access-denied.component';
-import { StatFournisseurCountResolver, StatOuvrierCountResolver, StatIncomesResolver, StatOutcomesResolver } from './../../shared/resolvers/statistiques.resolver';
+import { StatFournisseurCountResolver, StatOuvrierCountResolver, StatIncomesResolver, StatOutcomesResolver, StatChargesOutcomesResolver } from './../../shared/resolvers/statistiques.resolver';
 
 import { OuvrierResolver } from './../../shared/resolvers/ouvrier.resolver';
 import { ClientResolver } from './../../shared/resolvers/client.resolver';
@@ -106,7 +106,8 @@ export const AdminLayoutRoutes: Routes = [
         nombreOuvriers: StatOuvrierCountResolver,
         nombreCommandesClientParMois: StatCommandesClientCountResolver,
         incomes: StatIncomesResolver,
-        outcomes: StatOutcomesResolver
+        outcomes: StatOutcomesResolver,
+        chargesOutcomes: StatChargesOutcomesResolver,
     }},
     { path: 'app_users', component: AppUserComponent, resolve: { appUsers: AppUserResolver } },
     { path: 'login', component: LoginComponent },

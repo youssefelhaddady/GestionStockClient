@@ -25,7 +25,7 @@ export class BillGeneratorService {
         switch (action) {
             case 'open': pdfMake.createPdf(documentDefinition).open(); break;
             case 'print': pdfMake.createPdf(documentDefinition).print(); break;
-            case 'download': pdfMake.createPdf(documentDefinition).open(); pdfMake.createPdf(documentDefinition).download((type === 'C' ? data.codeCmd : data.codeCmdF) + '.pdf'); break;
+            case 'download': pdfMake.createPdf(documentDefinition).download((type === 'C' ? data.codeCmd : data.codeCmdF) + '.pdf'); pdfMake.createPdf(documentDefinition).open(); break;
 
             default: pdfMake.createPdf(documentDefinition).open(); break;
         }
