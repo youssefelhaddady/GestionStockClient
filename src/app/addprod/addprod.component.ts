@@ -658,6 +658,7 @@ export class AddprodComponent implements OnInit {
         this.feedBackService.feedBackCustom('إضافة طلب', 'تم تمرير هذا الطلب بنجاح', 'success');
         this.resetCommandeForm();
       },
+      // message d'erreur
       error => {
         this.feedBackService.feedBackCustom('إضافة طلب', 'تعذر تمرير هذا الطلب', 'error');
     });
