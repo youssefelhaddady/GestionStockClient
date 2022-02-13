@@ -34,7 +34,7 @@
     "@auth0/angular-jwt": "^3.0.0",
     "@ngx-progressbar/core": "^3.0.2",
     "@ngx-progressbar/router": "^3.0.2",
-    "ajv": "6.10.0",
+    "ajv": "6.12.3",
     "angular-datatables": "^8.0.0",
     "angular-jwt": "github:auth0/angular-jwt",
     "arrive": "2.4.1",
